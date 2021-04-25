@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kabu.dev.dao.DailyEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.kabu.dev.dto.DailyOutDto" >
+    <id column="day_id" property="dayId" jdbcType="VARCHAR" />
+    <result column="start_price" property="startPrice" jdbcType="DECIMAL" />
+    <result column="end_price" property="endPrice" jdbcType="DECIMAL" />
+    <result column="high_price" property="highPrice" jdbcType="DECIMAL" />
+    <result column="low_price" property="lowPrice" jdbcType="DECIMAL" />
+    <result column="vol" property="vol" jdbcType="BIGINT" />
+    <association property="stock" column="stock_id" select="com.kabu.dev.dao.StockEntityMapper.selectByPrimaryKey" ></association>
+  </resultMap>
+  <resultMap id="KlineMap" type="com.kabu.dev.dto.KLineDailyOutDto" >
+    <id column="day_id" property="dayId" jdbcType="VARCHAR" />
+    <result column="start_price" property="startPrice" jdbcType="DECIMAL" />
+    <result column="end_price" property="endPrice" jdbcType="DECIMAL" />
+    <result column="high_price" property="highPrice" jdbcType="DECIMAL" />
+    <result column="low_price" property="lowPrice" jdbcType="DECIMAL" />
+    <result column="vol" property="vol" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    stock_id, day_id, start_price, end_price, high_price, low_price, vol
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from daily
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+      and day_id = #{dayId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectMA" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from daily
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+      and day_id > #{dayId,jdbcType=VARCHAR}
+    order by day_id
+  </select>
+  <select id="selectByIdMini"  resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from daily
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+    order by day_id desc
+  </select>
+  <select id="selectByDailyId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from daily
+    where day_id = #{dayId,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="selectKline" resultMap="KlineMap">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from daily
+  	where stock_id=#{stockId} 
+  	ORDER BY  day_id DESC
+	LIMIT 1,#{day}
+  </select>
+</mapper>

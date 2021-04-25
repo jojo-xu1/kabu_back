@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kabu.dev.dao.VideoEntityMapper" >
+  <resultMap id="BaseResultMap" type="VideoEntity" >
+    <id column="video_cd" property="videoCd" jdbcType="BIGINT" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="video_name" property="videoName" jdbcType="VARCHAR" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="updateuser" property="updateuser" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="BaseListResultMap" type="VideoEntity" >
+    <id column="video_cd" property="videoCd" jdbcType="BIGINT" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="video_name" property="videoName" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="VideoEntity" extends="BaseResultMap" >
+    <id column="video_cd" property="videoCd" jdbcType="BIGINT" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="video_name" property="videoName" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="ResultMapList" type="com.kabu.dev.dto.KabuVideoOutDto" extends="BaseListResultMap" >
+    <id column="video_cd" property="videoCd" jdbcType="BIGINT" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="video_name" property="videoName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    video_cd, path, video_name, createuser, createtime, updateuser, 
+    updatetime
+  </sql>
+  <sql id="Blob_Column_List" >
+     video_cd, path, video_name
+  </sql>
+  <sql id="keyword_Column_List" >
+    video_cd, path, video_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+    <include refid="Blob_Column_List" />
+    from video
+    where video_cd = #{videoCd,jdbcType=BIGINT}
+  </select>
+  <select id="selectList" resultMap="ResultMapList"  >
+    select 
+    <include refid="keyword_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from info
+    
+	<where>
+		<if test="key != null">
+			column_id = #{key}
+		</if>
+	</where>
+	<if test="published_at != null">
+			order by published_at DESC
+	</if> 
+  </select>
+  <select id="selectListAll" resultMap="BaseListResultMap"  >
+    select 
+    <include refid="Blob_Column_List" />
+    from video
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from video
+    where video_cd = #{videoCd,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.kabu.dev.dto.KabuVideoInDto" >
+    insert into video ( path, 
+      video_name)
+    values ( #{path,jdbcType=VARCHAR}, 
+      #{videoName,jdbcType=VARCHAR})
+  </insert>
+ 
+  <update id="updateByPrimaryKey"  >
+    update video
+    <set >
+      <if test="path != null" >
+        path = #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="videoName != null" >
+        video_name = #{videoName,jdbcType=VARCHAR},
+      </if>
+      <if test="createuser != null" >
+        createuser = #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateuser != null" >
+        updateuser = #{updateuser,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where video_cd = #{videoCd,jdbcType=BIGINT}
+  </update>
+
+</mapper>

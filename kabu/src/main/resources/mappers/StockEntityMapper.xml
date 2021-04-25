@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kabu.dev.dao.StockEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.kabu.dev.entity.StockEntity" >
+    <id column="stock_id" property="stockId" jdbcType="VARCHAR" />
+    <result column="stock_name" property="stockName" jdbcType="VARCHAR" />
+    <result column="industry" property="industry" jdbcType="VARCHAR" />
+    <result column="total" property="total" jdbcType="VARCHAR" />
+    <result column="dividend_yield" property="dividendYield" jdbcType="VARCHAR" />
+    <result column="dividend_perShare" property="dividendPershare" jdbcType="VARCHAR" />
+    <result column="per" property="per" jdbcType="VARCHAR" />
+    <result column="pbr" property="pbr" jdbcType="VARCHAR" />
+    <result column="eps" property="eps" jdbcType="VARCHAR" />
+    <result column="bps" property="bps" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+    <result column="delflg" property="delflg" jdbcType="VARCHAR" />
+    <result column="createtime" property="createtime" jdbcType="TIMESTAMP" />
+    <result column="createuser" property="createuser" jdbcType="VARCHAR" />
+    <result column="updateuser" property="updateuser" jdbcType="VARCHAR" />
+    <result column="updatetime" property="updatetime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="OutDtoMap" type="com.kabu.dev.dto.StockOutDto" >
+    <id column="stock_id" property="stockId" jdbcType="VARCHAR" />
+    <result column="stock_name" property="stockName" jdbcType="VARCHAR" />
+    <result column="industry" property="industry" jdbcType="VARCHAR" />
+    <result column="total" property="total" jdbcType="VARCHAR" />
+    <result column="dividend_yield" property="dividendYield" jdbcType="VARCHAR" />
+    <result column="dividend_perShare" property="dividendPershare" jdbcType="VARCHAR" />
+    <result column="per" property="per" jdbcType="VARCHAR" />
+    <result column="pbr" property="pbr" jdbcType="VARCHAR" />
+    <result column="eps" property="eps" jdbcType="VARCHAR" />
+    <result column="bps" property="bps" jdbcType="VARCHAR" />
+    <result column="unit" property="unit" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    stock_id, stock_name, industry, total, dividend_yield, dividend_perShare, per, pbr, 
+    eps, bps, unit
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="OutDtoMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from stockmaster
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from stockmaster
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.kabu.dev.entity.StockEntity" >
+    insert into stockmaster (stock_id, stock_name, industry, 
+      total, dividend_yield, dividend_perShare, 
+      per, pbr, eps, bps, 
+      unit, delflg, createtime, 
+      createuser, updateuser, updatetime
+      )
+    values (#{stockId,jdbcType=VARCHAR}, #{stockName,jdbcType=VARCHAR}, #{industry,jdbcType=VARCHAR}, 
+      #{total,jdbcType=VARCHAR}, #{dividendYield,jdbcType=VARCHAR}, #{dividendPershare,jdbcType=VARCHAR}, 
+      #{per,jdbcType=VARCHAR}, #{pbr,jdbcType=VARCHAR}, #{eps,jdbcType=VARCHAR}, #{bps,jdbcType=VARCHAR}, 
+      #{unit,jdbcType=VARCHAR}, #{delflg,jdbcType=VARCHAR}, #{createtime,jdbcType=TIMESTAMP}, 
+      #{createuser,jdbcType=VARCHAR}, #{updateuser,jdbcType=VARCHAR}, #{updatetime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+
+  <update id="updateByPrimaryKeySelective"  >
+    update stockmaster
+    <set >
+      <if test="stockName != null" >
+        stock_name = #{stockName,jdbcType=VARCHAR},
+      </if>
+      <if test="industry != null" >
+        industry = #{industry,jdbcType=VARCHAR},
+      </if>
+      <if test="total != null" >
+        total = #{total,jdbcType=VARCHAR},
+      </if>
+      <if test="dividendYield != null" >
+        dividend_yield = #{dividendYield,jdbcType=VARCHAR},
+      </if>
+      <if test="dividendPershare != null" >
+        dividend_perShare = #{dividendPershare,jdbcType=VARCHAR},
+      </if>
+      <if test="per != null" >
+        per = #{per,jdbcType=VARCHAR},
+      </if>
+      <if test="pbr != null" >
+        pbr = #{pbr,jdbcType=VARCHAR},
+      </if>
+      <if test="eps != null" >
+        eps = #{eps,jdbcType=VARCHAR},
+      </if>
+      <if test="bps != null" >
+        bps = #{bps,jdbcType=VARCHAR},
+      </if>
+      <if test="unit != null" >
+        unit = #{unit,jdbcType=VARCHAR},
+      </if>
+      <if test="delflg != null" >
+        delflg = #{delflg,jdbcType=VARCHAR},
+      </if>
+      <if test="createtime != null" >
+        createtime = #{createtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createuser != null" >
+        createuser = #{createuser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateuser != null" >
+        updateuser = #{updateuser,jdbcType=VARCHAR},
+      </if>
+      <if test="updatetime != null" >
+        updatetime = #{updatetime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>
