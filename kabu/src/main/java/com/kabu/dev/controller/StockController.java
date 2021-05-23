@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kabu.dev.dto.StockOutDto;
+import com.kabu.dev.dto.UserCollectionDto;
 import com.kabu.dev.service.StockMasterService;
 import com.kabu.dev.vo.ResultJson;
 
@@ -46,4 +47,16 @@ public class StockController {
 			return result;
 		}
 	}
+	@GetMapping("/setUserColt")
+	public boolean insertUserCollection(String stockId) {
+		
+		return true;
+	}
+//	@GetMapping("/getUserColt")
+//	public ResultJson userCollectionlist() {
+////		UserCollectionDto out;
+////		
+////		ResultJson result = ResultJson.success(out);
+////		return result;
+//	}
 }

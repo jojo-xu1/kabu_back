@@ -7,11 +7,30 @@ public class ResultJson {
 	private String message;
 	private Object data;
 	
+	//Luke Zhou
+	public ResultJson() {
+		
+	}
+	public ResultJson(String message) {
+		
+		this.message = message ;
+		
+	}
+	
 	public static final ResultJson success(Object data) {
 		ResultJson result=new ResultJson();
 		result.setCode("200");
 		result.setMessage("success!");
 		result.setData(data);
+		return result;
+	}
+	
+	//Luke Zhou
+	public static final ResultJson passwordWrong() {
+		ResultJson result=new ResultJson();
+		result.setCode("9999");
+		result.setMessage("password is wrong");
+		result.setData(null);
 		return result;
 	}
 	

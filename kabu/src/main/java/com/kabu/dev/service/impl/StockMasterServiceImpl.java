@@ -32,11 +32,12 @@ public class StockMasterServiceImpl implements StockMasterService {
 		PageHelper.startPage(Integer.parseInt(num), Integer.parseInt(size));
 		List<DailyOutDto> list = dailyDao.selectByDailyId(dailyId);
 		List<DailyOutDto> filtedList = filter.setMA(list);
-		System.out.println(list.size());
-		System.out.println("这是分界线");
-		System.out.println(filtedList.size());
+		List<DailyOutDto> listLow = dailyDao.selectMAListLow();
+		
 		PageInfo<DailyOutDto> page = new PageInfo<>(filtedList);
-		map.put("list", filtedList);
+		map.put("listMed", filtedList);
+		map.put("listLow", listLow);
+		map.put("listHigh", filtedList);
 		map.put("pageSize", size);
 		map.put("num", num);
 		map.put("count", page.getTotal());

@@ -37,8 +37,11 @@ public class DailyFilter {
 	
 	public List<DailyOutDto> getList(List<DailyOutDto> list,Long AveDays,Long minRate,Long maxRate) throws Exception {
 		List<DailyOutDto> kabuList = new ArrayList<DailyOutDto>();
+		
 		for (int i = list.size() - 1; i >= 0; i--) {
 			//获取股票数据
+			if(list.get(i).getStock() == null) {
+			}else {
 			List<DailyOutDto> DailyPriceList = dailyDao.selectByIdMini(list.get(i).getStock().getStockId());
 			
 			List<Long> tenDayAveList = new ArrayList<>(); //十日均线值list
@@ -106,6 +109,7 @@ public class DailyFilter {
 			kabuList.add(rtnDto);
 			
 		}
+	}
 		return kabuList;
 	}
 

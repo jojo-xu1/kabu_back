@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.kabu.dev.dao.DailyEntityMapper" >
   <resultMap id="BaseResultMap" type="com.kabu.dev.dto.DailyOutDto" >
-    <id column="day_id" property="dayId" jdbcType="VARCHAR" />
+    <result column="day_id" property="dayId" jdbcType="VARCHAR" />
     <result column="start_price" property="startPrice" jdbcType="DECIMAL" />
     <result column="end_price" property="endPrice" jdbcType="DECIMAL" />
     <result column="high_price" property="highPrice" jdbcType="DECIMAL" />
@@ -27,6 +27,25 @@
     from daily
     where stock_id = #{stockId,jdbcType=VARCHAR}
       and day_id = #{dayId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectMAListLow" resultMap="BaseResultMap"  >
+  select  rel.day_id as day_id, rel.start_price as start_price, rel.end_price as end_price, rel.high_price as high_price, rel.low_price as low_price, rel.vol as vol,rel.stock_id as stock_id
+   from income inc,realstock rel
+    where rel.stock_id=inc.stock_id
+     and rel.day_id =(select max(day_id) from realstock)
+     order by ROUND(CAST(inc.haitou_rate AS DOUBLE)/rel.end_price*100, 2) desc
+     limit 2,9
+  </select>
+  
+  <insert id="insertUserCollection" parameterType="com.kabu.dev.dto.UserCollectionDto" >
+    insert into usercollection ( stock_id, user_id, del_flag)
+    values ( #{stockId,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},#{delflag,jdbcType=VARCHAR} )
+  </insert>
+
+  <select id="selectmyfavourite" resultMap="BaseResultMap"  >
+    select stock_id, user_id, del_flag
+    from usercollection
+    where user_id = #{userId,jdbcType=VARCHAR}
   </select>
 
   <select id="selectMA" resultMap="BaseResultMap"  >

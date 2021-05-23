@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kabu.dev.dao.StockTradeEntityMapper" >
+<resultMap id="BaseResultMap" type="com.kabu.dev.dto.StockTradeDto" >
+    <id column="stock_id" property="stockId" jdbcType="VARCHAR" />
+    <result column="startbuydate" property="startbuydate" jdbcType="VARCHAR" />
+    <result column="endbuydate" property="endbuydate" jdbcType="VARCHAR" />
+    <result column="startselldate" property="startselldate" jdbcType="VARCHAR" />
+    <result column="endselldate" property="endselldate" jdbcType="VARCHAR" />
+    <result column="updateflag" property="updateflag" jdbcType="VARCHAR" />
+  </resultMap>
+<sql id="Base_Column_List" >
+    stock_id, startbuydate, endbuydate, startselldate, endselldate, updateflag
+</sql>
+<select id="selectYesdata" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from stocktrade
+    where updateflag = "1"
+</select>
+<delete id="deleteRecmByKey"  parameterType="java.lang.String" >
+    delete from stocktrade
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+  </delete>
+<update id="updateDailyRecmBykey" parameterType="java.lang.String"  >
+    update stocktrade 
+    <set >   
+        updateflag = "0",
+    </set>
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+  </update>
+
+
+
+
+
+</mapper>

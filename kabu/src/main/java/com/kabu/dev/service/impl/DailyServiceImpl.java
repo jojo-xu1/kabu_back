@@ -1,6 +1,5 @@
 package com.kabu.dev.service.impl;
 
-import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import com.kabu.dev.dao.StockEntityMapper;
 import com.kabu.dev.dto.KLineDailyOutDto;
 import com.kabu.dev.dto.KLineOutDto;
 import com.kabu.dev.dto.StockOutDto;
+import com.kabu.dev.dto.UserCollectionDto;
 import com.kabu.dev.service.DailyService;
 @Service
 public class DailyServiceImpl implements DailyService{
@@ -36,6 +36,12 @@ public class DailyServiceImpl implements DailyService{
 		List<KLineDailyOutDto> list=dailyDao.selectKline(stockId, Integer.parseInt(day));
 		k.setkLineDailyOutDto(list);
 		return k;
+	}
+	
+	@Override
+	public void createUserCollection(UserCollectionDto dto) throws Exception {
+		dailyDao.insertUserCollection(dto);
+		
 	}
 
 }
