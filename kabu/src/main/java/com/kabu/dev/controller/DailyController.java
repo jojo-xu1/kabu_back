@@ -54,11 +54,10 @@ public class DailyController {
 		
 	}
 	@GetMapping("collectionList")
-	public List<DailyOutDto> listAll() {
-		String userId = "admin";
-		//TODO
-		//从session中获取userId
-		List<DailyOutDto> list = dailyDao.selectmyfavourite(userId);
+	public List<DailyOutDto> listAll(String userId) {
+		String LoginUserId = userId;
+		List<DailyOutDto> list = dailyDao.selectmyfavourite(LoginUserId);
+		
 		return list;
 		
 		

@@ -37,15 +37,15 @@
      limit 2,9
   </select>
   
-  <insert id="insertUserCollection" parameterType="com.kabu.dev.dto.UserCollectionDto" >
+  <insert id="insertUserCollection">
     insert into usercollection ( stock_id, user_id, del_flag)
-    values ( #{stockId,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},#{delflag,jdbcType=VARCHAR} )
+    values ( #{stockId,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},0 )
   </insert>
 
   <select id="selectmyfavourite" resultMap="BaseResultMap"  >
     select stock_id, user_id, del_flag
     from usercollection
-    where user_id = #{userId,jdbcType=VARCHAR}
+    where user_id = #{LoginUserId,jdbcType=VARCHAR}
   </select>
 
   <select id="selectMA" resultMap="BaseResultMap"  >

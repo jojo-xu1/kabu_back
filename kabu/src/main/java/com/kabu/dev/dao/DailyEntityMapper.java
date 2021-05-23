@@ -22,7 +22,7 @@ public interface DailyEntityMapper {
     List<DailyOutDto> selectMAListLow();
 
 	
-	int insertUserCollection(UserCollectionDto dto);
+	int insertUserCollection(String stockId,String userId);
     
-    List<DailyOutDto>selectmyfavourite(String userId);
+    List<DailyOutDto> selectmyfavourite(String LoginUserId);
 }

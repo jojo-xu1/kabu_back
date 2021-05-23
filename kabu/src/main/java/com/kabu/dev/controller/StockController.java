@@ -2,12 +2,16 @@ package com.kabu.dev.controller;
 
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kabu.dev.dao.DailyEntityMapper;
 import com.kabu.dev.dto.StockOutDto;
 import com.kabu.dev.dto.UserCollectionDto;
 import com.kabu.dev.service.StockMasterService;
@@ -19,6 +23,8 @@ import com.kabu.dev.vo.ResultJson;
 public class StockController {
 	@Autowired
 	StockMasterService stockMasterService;
+	@Autowired
+	DailyEntityMapper dailyDao;
 	
 	@GetMapping("/dailyList")
 	public ResultJson dailyList(String num,String size,String dailyId,String flag) {
@@ -48,15 +54,21 @@ public class StockController {
 		}
 	}
 	@GetMapping("/setUserColt")
-	public boolean insertUserCollection(String stockId) {
+	public boolean insertUserCollection(String stockId,String userId) {
 		
-		return true;
+		if(stockId !=null && userId!=null) {
+			int out = dailyDao.insertUserCollection(stockId, userId);
+			if(out==1) {
+				return true;
+			}else {
+				return false;
+			}
+			
+		}else {
+			return false;
+		}
+		
+		
 	}
-//	@GetMapping("/getUserColt")
-//	public ResultJson userCollectionlist() {
-////		UserCollectionDto out;
-////		
-////		ResultJson result = ResultJson.success(out);
-////		return result;
-//	}
+
 }
