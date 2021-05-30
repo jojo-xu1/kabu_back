@@ -39,8 +39,8 @@ public class DailyServiceImpl implements DailyService{
 	}
 	
 	@Override
-	public void createUserCollection(UserCollectionDto dto) throws Exception {
-		dailyDao.insertUserCollection(dto);
+	public void createUserCollection(String stockId,String userId) throws Exception {
+		dailyDao.insertUserCollection(stockId,userId);
 		
 	}
 

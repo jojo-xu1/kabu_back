@@ -7,5 +7,5 @@ public interface DailyService {
 
 	KLineOutDto KlineService(String stockId,String day)throws Exception;
 
-	void createUserCollection(UserCollectionDto dto) throws Exception;
+	void createUserCollection(String stockId,String userId) throws Exception;
 }

@@ -41,9 +41,9 @@ public class DailyController {
 		
 	}
 	@GetMapping("insert")
-	public String createUserCollection(UserCollectionDto dto) {
+	public String createUserCollection(String stockId,String userId) {
 		try{
-			dailyService.createUserCollection(dto);
+			dailyService.createUserCollection(stockId,userId);
 			return  "気に入りました";
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
