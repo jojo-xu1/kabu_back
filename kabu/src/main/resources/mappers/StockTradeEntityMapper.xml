@@ -29,6 +29,13 @@
     </set>
     where stock_id = #{stockId,jdbcType=VARCHAR}
   </update>
+  <insert id="insertRecmByKey" parameterType="com.kabu.dev.dto.StockTradeDto" >
+   insert into stocktrade (stockId,startbuydate,endbuydate,startselldate,endselldate,updateflag)
+   values (#{stockId,jdbcType=VARCHAR},#{startbuydate,jdbcType=VARCHAR},
+   #{endbuydate,jdbcType=VARCHAR},#{startselldate,jdbcType=VARCHAR},
+   #{endselldate,jdbcType=VARCHAR},#{updateflag,jdbcType=VARCHAR})
+  </insert>
+  
 
 
 
