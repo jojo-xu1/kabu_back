@@ -13,7 +13,7 @@ public interface DailyEntityMapper {
 	DailyOutDto selectByPrimaryKey(String stockId,String dayId);
     
     List<DailyOutDto> selectByDailyId(String dailyId);
-    
+    List<DailyOutDto> selectstockpool();   
     List<DailyOutDto> selectMA(String stockId,String dayId);
  
     List<KLineDailyOutDto> selectKline(@Param("stockId")String stockId,@Param("day")int day);

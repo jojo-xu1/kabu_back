@@ -4,10 +4,10 @@
 <resultMap id="BaseResultMap" type="com.kabu.dev.dto.StockTradeDto" >
     <id column="stock_id" property="stockId" jdbcType="VARCHAR" />
     <result column="startbuydate" property="startbuydate" jdbcType="VARCHAR" />
-    <result column="endbuydate" property="endbuydate" jdbcType="VARCHAR" />
-    <result column="startselldate" property="startselldate" jdbcType="VARCHAR" />
+    <result column="buy_price" property="buy_price" jdbcType="DECIMAL" />
+    <result column="sell_price" property="sell_price" jdbcType="DECIMAL" />
     <result column="endselldate" property="endselldate" jdbcType="VARCHAR" />
-    <result column="updateflag" property="updateflag" jdbcType="VARCHAR" />
+    <result column="updateflag" property="updateflag" jdbcType="INTEGER" />
   </resultMap>
 <sql id="Base_Column_List" >
     stock_id, startbuydate, endbuydate, startselldate, endselldate, updateflag
@@ -29,15 +29,30 @@
     </set>
     where stock_id = #{stockId,jdbcType=VARCHAR}
   </update>
+  <update id="updateStockTradeDate" parameterType="java.lang.String"  >
+    update stocktrade 
+    <set >   
+        updateflag = 1,
+        endselldate = #{endselldate,jdbcType=VARCHAR}
+    </set>
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+  </update>
   <insert id="insertRecmByKey" parameterType="com.kabu.dev.dto.StockTradeDto" >
-   insert into stocktrade (stockId,startbuydate,endbuydate,startselldate,endselldate,updateflag)
-   values (#{stockId,jdbcType=VARCHAR},#{startbuydate,jdbcType=VARCHAR},
-   #{endbuydate,jdbcType=VARCHAR},#{startselldate,jdbcType=VARCHAR},
-   #{endselldate,jdbcType=VARCHAR},#{updateflag,jdbcType=VARCHAR})
+   insert into stocktrade (stock_id,startbuydate,type,buy_price,sell_price,endselldate,updateflag)
+   values (#{stockId,jdbcType=VARCHAR},#{startbuydate,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},
+   #{buy_price,jdbcType=DECIMAL },#{sell_price,jdbcType=DECIMAL},
+   #{endselldate,jdbcType=VARCHAR},#{updateflag,jdbcType=INTEGER})
   </insert>
   
-
-
+<delete id="deletetempstocktrade"  parameterType="java.lang.String" >
+    delete from tempstocktrade
+</delete>
+  <insert id="inserttempstocktrade" parameterType="com.kabu.dev.dto.StockTradeDto" >
+   insert into tempstocktrade (stock_id,startbuydate,type,buy_price,sell_price,endselldate,updateflag)
+   values (#{stockId,jdbcType=VARCHAR},#{startbuydate,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},
+   #{buy_price,jdbcType=DECIMAL },#{sell_price,jdbcType=DECIMAL},
+   #{endselldate,jdbcType=VARCHAR},#{updateflag,jdbcType=INTEGER})
+  </insert>
 
 
 

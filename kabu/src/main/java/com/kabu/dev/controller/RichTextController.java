@@ -42,6 +42,7 @@ public class RichTextController {
 		try {
 			Map<String,Object> map = richTextService.queryListRichText(columnId, num, size);
 			ResultJson result = ResultJson.success(map);
+			System.out.println("listRichText.................");
 			return result;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

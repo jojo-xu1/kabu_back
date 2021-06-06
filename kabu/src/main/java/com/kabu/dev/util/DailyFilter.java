@@ -1,5 +1,6 @@
 package com.kabu.dev.util;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,8 +45,8 @@ public class DailyFilter {
 			}else {
 			List<DailyOutDto> DailyPriceList = dailyDao.selectByIdMini(list.get(i).getStock().getStockId());
 			
-			List<Long> tenDayAveList = new ArrayList<>(); //十日均线值list
-			List<Long> twnDayAveList = new ArrayList<>(); //二十日均线值list			
+			List<Double> tenDayAveList = new ArrayList<>(); //十日均线值list
+			List<Double> twnDayAveList = new ArrayList<>(); //二十日均线值list			
 			List<Double> twnUpRateList = new ArrayList<>(); //二十日均线值增长率list
 			
 			//条件一：可参考数据大于需要条数
@@ -55,14 +56,14 @@ public class DailyFilter {
 			//计算十日均线  二十日均线
 			for (int k=0;k<AveDays;k++) {
 				//设定初始值
-				long twnDayAve = 0;
-				long tenDayAve = 0;
+				double twnDayAve =0;
+				double tenDayAve = 0;
 				
 				for(int j =k;j<k+10;j++) {
-					tenDayAve = (DailyPriceList.get(j).getEndPrice()+ tenDayAve*(j-k))/(j-k+1);;
+					tenDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ tenDayAve*(j-k))/(j-k+1);
 				}
 				for(int j =k;j<k+20;j++) {
-					twnDayAve = (DailyPriceList.get(j).getEndPrice()+ twnDayAve*(j-k))/(j-k+1);;
+					twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
 				}
 				tenDayAveList.add(tenDayAve);
 				twnDayAveList.add(twnDayAve);						
@@ -103,8 +104,8 @@ public class DailyFilter {
 
 
 			DailyOutDto rtnDto = list.get(i);
-			rtnDto.setMa10((long) tenDayAveList.get(0)); // 10日均值
-			rtnDto.setMa20((long) twnDayAveList.get(0)); // 20日均值
+			rtnDto.setMa10((Double) tenDayAveList.get(0)); // 10日均值
+			rtnDto.setMa20((Double) twnDayAveList.get(0)); // 20日均值
 			rtnDto.setMa20UpRate(twnUpRateList.get(0)); // 20日均值变化率
 			kabuList.add(rtnDto);
 			

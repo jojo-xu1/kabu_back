@@ -1,24 +1,26 @@
 package com.kabu.dev.dto;
 
+import java.math.BigDecimal;
+
 public class DailyOutDto  {
 	
 	private StockOutDto stock;
 
     private String dayId;
     
-    private Long startPrice;
+    private BigDecimal startPrice;
 
-    private Long endPrice;
+    private BigDecimal endPrice;
 
-    private Long highPrice;
+    private BigDecimal highPrice;
 
-    private Long lowPrice;
+    private BigDecimal lowPrice;
 
     private Long vol;
     
-    private Long ma10;
+    private double ma10;
     
-    private Long ma20;
+    private double ma20;
     
     private double ma10UpRate;
     
@@ -42,35 +44,35 @@ public class DailyOutDto  {
 		this.dayId = dayId;
 	}
 
-	public Long getStartPrice() {
+	public BigDecimal getStartPrice() {
 		return startPrice;
 	}
 
-	public void setStartPrice(Long startPrice) {
+	public void setStartPrice(BigDecimal startPrice) {
 		this.startPrice = startPrice;
 	}
 
-	public Long getEndPrice() {
+	public BigDecimal getEndPrice() {
 		return endPrice;
 	}
 
-	public void setEndPrice(Long endPrice) {
+	public void setEndPrice(BigDecimal endPrice) {
 		this.endPrice = endPrice;
 	}
 
-	public Long getHighPrice() {
+	public BigDecimal getHighPrice() {
 		return highPrice;
 	}
 
-	public void setHighPrice(Long highPrice) {
+	public void setHighPrice(BigDecimal highPrice) {
 		this.highPrice = highPrice;
 	}
 
-	public Long getLowPrice() {
+	public BigDecimal getLowPrice() {
 		return lowPrice;
 	}
 
-	public void setLowPrice(Long lowPrice) {
+	public void setLowPrice(BigDecimal lowPrice) {
 		this.lowPrice = lowPrice;
 	}
 
@@ -82,19 +84,19 @@ public class DailyOutDto  {
 		this.vol = vol;
 	}
 
-	public Long getMa10() {
+	public double getMa10() {
 		return ma10;
 	}
 
-	public void setMa10(Long ma10) {
+	public void setMa10(double ma10) {
 		this.ma10 = ma10;
 	}
 
-	public Long getMa20() {
+	public double getMa20() {
 		return ma20;
 	}
 
-	public void setMa20(Long ma20) {
+	public void setMa20(double ma20) {
 		this.ma20 = ma20;
 	}
 

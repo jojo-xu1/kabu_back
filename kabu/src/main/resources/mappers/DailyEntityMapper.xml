@@ -59,7 +59,7 @@
   <select id="selectByIdMini"  resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />
-    from daily
+    from realstock
     where stock_id = #{stockId,jdbcType=VARCHAR}
     order by day_id desc
   </select>
@@ -69,11 +69,17 @@
     from daily
     where day_id = #{dayId,jdbcType=VARCHAR}
   </select>
-  
+    <select id="selectstockpool" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from realstock
+     where stock_id in (select DISTINCT(stock_id) from daily)
+     and day_id = (select max(day_id) from realstock)
+  </select>
   <select id="selectKline" resultMap="KlineMap">
   	select 
   	<include refid="Base_Column_List" />
-  	from daily
+  	from realstock
   	where stock_id=#{stockId} 
   	ORDER BY  day_id DESC
 	LIMIT 1,#{day}

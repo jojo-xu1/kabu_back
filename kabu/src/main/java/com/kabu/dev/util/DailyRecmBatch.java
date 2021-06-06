@@ -1,5 +1,7 @@
 package com.kabu.dev.util;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -58,16 +60,18 @@ public class DailyRecmBatch {
 					continue;//跳过当前数据库中正在推荐的股票
 				}else {
 					String stockId = listToday.get(i).getStock().getStockId();
+					BigDecimal price =listToday.get(j).getEndPrice();
 					//删除与既存重合的数据
 					DailyTradeDao.deleteRecmByKey(stockId);	
 					//插入新数据
-					StockTradeDto stockTradeDto = null;
+					StockTradeDto stockTradeDto = new StockTradeDto();
 					stockTradeDto.setStockId(stockId);
+					stockTradeDto.setType(2);
 					stockTradeDto.setStartbuydate(toDay.toString());//开始购入日
-					stockTradeDto.setEndbuydate(toDay.toString());//停止购入日（买入日后三天）
-					stockTradeDto.setStartselldate(toDay.toString());//开始出售日（买入日后六天）
+					stockTradeDto.setBuy_price(price);//
+					stockTradeDto.setSell_price(null);//
 					stockTradeDto.setEndselldate(toDay.toString());//停止出售日（买入日后九天）
-					stockTradeDto.setUpdateflag("1");
+					stockTradeDto.setUpdateflag(1);
 					DailyTradeDao.insertRecmByKey(stockTradeDto);
 				}
 			}
@@ -76,4 +80,57 @@ public class DailyRecmBatch {
 			
 	}
 	
+	public void Dailybatch() throws Exception {
+		Date toDay=new Date();
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
+		 String dateNowStr = sdf.format(toDay);  
+		 DailyTradeDao.deletetempstocktrade();
+		 DailyByincome();//by income
+		 DailyByMA();//by MA10 ,MA20
+		//DailyTradeDao.updateStockTradeDate("1301",dateNowStr);	
+		System.out.println("come to Dailybatch");
+	}
+	
+	private void DailyByincome() throws Exception {
+		Date toDay=new Date();
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
+		 String dateNowStr = sdf.format(toDay);  
+		List<DailyOutDto> listTodayLow= dailyDao.selectMAListLow();
+		for (int j=0;j<listTodayLow.size();j++) {
+			//插入新数据
+			String stockId = listTodayLow.get(j).getStock().getStockId();
+			BigDecimal price =listTodayLow.get(j).getEndPrice();
+			StockTradeDto stockTradeDto = new StockTradeDto();
+			stockTradeDto.setStockId(stockId);
+			stockTradeDto.setType(1);
+			stockTradeDto.setStartbuydate(dateNowStr);//开始购入日
+			stockTradeDto.setBuy_price(price);//
+			stockTradeDto.setSell_price(null);//
+			stockTradeDto.setEndselldate("");//停止出售日（买入日后九天）
+			stockTradeDto.setUpdateflag(0);
+			DailyTradeDao.inserttempstocktrade(stockTradeDto);
+		}
+	}	
+	private void DailyByMA() throws Exception {
+		Date toDay=new Date();
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
+		 String dateNowStr = sdf.format(toDay);  
+			//获取今日份推荐股票
+			List<DailyOutDto> list = dailyDao.selectstockpool();
+			List<DailyOutDto> listToday = filter.setMA(list);
+		for (int j=0;j<listToday.size();j++) {
+			//插入新数据
+			String stockId = listToday.get(j).getStock().getStockId();
+			BigDecimal price =listToday.get(j).getEndPrice();
+			StockTradeDto stockTradeDto = new StockTradeDto();
+			stockTradeDto.setStockId(stockId);
+			stockTradeDto.setType(2);
+			stockTradeDto.setStartbuydate(dateNowStr);//开始购入日
+			stockTradeDto.setBuy_price(price);//
+			stockTradeDto.setSell_price(null);//
+			stockTradeDto.setEndselldate("");//停止出售日（买入日后九天）
+			stockTradeDto.setUpdateflag(0);
+			DailyTradeDao.inserttempstocktrade(stockTradeDto);
+		}
+	}	
 }

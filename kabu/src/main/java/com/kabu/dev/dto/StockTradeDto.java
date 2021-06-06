@@ -1,12 +1,15 @@
 package com.kabu.dev.dto;
 
+import java.math.BigDecimal;
+
 public class StockTradeDto {
 	private String stockId;
 	private String startbuydate;
-	private String endbuydate;
-	private String startselldate;
+	private int type;
+	private BigDecimal buy_price;
+	private BigDecimal sell_price;
 	private String endselldate;
-	private String updateflag;
+	private int updateflag;
 	public String getStockId() {
 		return stockId;
 	}
@@ -19,17 +22,11 @@ public class StockTradeDto {
 	public void setStartbuydate(String startbuydate) {
 		this.startbuydate = startbuydate;
 	}
-	public String getEndbuydate() {
-		return endbuydate;
+	public int getType() {
+		return type;
 	}
-	public void setEndbuydate(String endbuydate) {
-		this.endbuydate = endbuydate;
-	}
-	public String getStartselldate() {
-		return startselldate;
-	}
-	public void setStartselldate(String startselldate) {
-		this.startselldate = startselldate;
+	public void setType(int type) {
+		this.type = type;
 	}
 	public String getEndselldate() {
 		return endselldate;
@@ -37,10 +34,22 @@ public class StockTradeDto {
 	public void setEndselldate(String endselldate) {
 		this.endselldate = endselldate;
 	}
-	public String getUpdateflag() {
+	public int getUpdateflag() {
 		return updateflag;
 	}
-	public void setUpdateflag(String updateflag) {
+	public void setUpdateflag(int updateflag) {
 		this.updateflag = updateflag;
+	}
+	public BigDecimal getBuy_price() {
+		return buy_price;
+	}
+	public void setBuy_price(BigDecimal buy_price) {
+		this.buy_price = buy_price;
+	}
+	public BigDecimal getSell_price() {
+		return sell_price;
+	}
+	public void setSell_price(BigDecimal sell_price) {
+		this.sell_price = sell_price;
 	}
 }
