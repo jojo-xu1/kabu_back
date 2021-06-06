@@ -140,7 +140,7 @@ public class DailyRecmBatch {
 		BigDecimal price =listToday.get(j).getEndPrice();
 		StockTradeDto stockTradeDto = new StockTradeDto();
 		stockTradeDto.setStockId(stockId);
-		stockTradeDto.setType(2);
+		stockTradeDto.setType(3);
 		stockTradeDto.setStartbuydate(dateNowStr);//开始购入日
 		stockTradeDto.setBuy_price(price);//
 		stockTradeDto.setSell_price(null);//

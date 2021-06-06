@@ -3,6 +3,7 @@
 <mapper namespace="com.kabu.dev.dao.StockTradeEntityMapper" >
 <resultMap id="BaseResultMap" type="com.kabu.dev.dto.StockTradeDto" >
     <id column="stock_id" property="stockId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
     <result column="startbuydate" property="startbuydate" jdbcType="VARCHAR" />
     <result column="buy_price" property="buy_price" jdbcType="DECIMAL" />
     <result column="sell_price" property="sell_price" jdbcType="DECIMAL" />
@@ -10,7 +11,7 @@
     <result column="updateflag" property="updateflag" jdbcType="INTEGER" />
   </resultMap>
 <sql id="Base_Column_List" >
-    stock_id, startbuydate, buy_price, sell_price, endselldate, updateflag
+    stock_id, type,startbuydate, buy_price, sell_price, endselldate, updateflag
 </sql>
 <select id="selectYesdata" resultMap="BaseResultMap"  >
     select 

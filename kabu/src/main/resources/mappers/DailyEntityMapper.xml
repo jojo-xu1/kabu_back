@@ -117,6 +117,6 @@
   	and start_price > 0
   	and end_price > 0
   	ORDER BY  day_id DESC
-	LIMIT 1,#{day}
+	LIMIT 0,#{day}
   </select>
 </mapper>
