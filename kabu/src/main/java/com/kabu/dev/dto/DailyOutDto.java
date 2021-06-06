@@ -26,7 +26,9 @@ public class DailyOutDto  {
     
     private double ma20UpRate;
 
-	
+	private String startbuydate;
+
+	private String endselldate;
 
 	public StockOutDto getStock() {
 		return stock;
@@ -116,6 +118,20 @@ public class DailyOutDto  {
 		this.ma20UpRate = ma20UpRate;
 	}
 
-    
+	public String getStartbuydate() {
+		return startbuydate;
+	}
+
+	public void setStartbuydate(String startbuydate) {
+		this.startbuydate = startbuydate;
+	}
+
+	public String getEndselldate() {
+		return endselldate;
+	}
+
+	public void setEndselldate(String endselldate) {
+		this.endselldate = endselldate;
+	}
 
 }

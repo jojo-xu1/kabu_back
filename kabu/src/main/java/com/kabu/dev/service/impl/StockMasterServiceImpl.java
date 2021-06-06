@@ -30,14 +30,13 @@ public class StockMasterServiceImpl implements StockMasterService {
 	public Map<String, Object> queryDailyList(String num, String size, String dailyId, String flag) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		PageHelper.startPage(Integer.parseInt(num), Integer.parseInt(size));
-		List<DailyOutDto> list = dailyDao.selectByDailyId(dailyId);
-		List<DailyOutDto> filtedList = filter.setMA(list);
-		List<DailyOutDto> listLow = dailyDao.selectMAListLow();
-		
-		PageInfo<DailyOutDto> page = new PageInfo<>(filtedList);
-		map.put("listMed", filtedList);
+		List<DailyOutDto> listLow = dailyDao.selectFromStockTradeLow();
+		List<DailyOutDto> listMid = dailyDao.selectFromStockTradeMid();
+		List<DailyOutDto> listHigh = dailyDao.selectFromStockTradeHigh();
+		PageInfo<DailyOutDto> page = new PageInfo<>(listMid);
+		map.put("listMed", listMid);
 		map.put("listLow", listLow);
-		map.put("listHigh", filtedList);
+		map.put("listHigh", listHigh);
 		map.put("pageSize", size);
 		map.put("num", num);
 		map.put("count", page.getTotal());

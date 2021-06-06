@@ -16,7 +16,7 @@ import com.kabu.dev.util.DailyRecmBatch;
 @EnableScheduling
 @MapperScan("com.kabu.dev.dao")
 public class KaBuApplication {
-	public static void main(String[] args) throws Exception {		
+	public static void main(String[] args) throws Exception {
 		SpringApplication.run(KaBuApplication.class, args);
 	}
 

@@ -9,9 +9,13 @@ public interface StockTradeEntityMapper {
 	
 	List<StockTradeDto> selectYesdata();
 	int updateDailyRecmBykey(String stockId);
-	int updateStockTradeDate(String stockId,String endselldate);	
+	int updateStockTradeDate(String endselldate);
+	int updateStockTradeUpdateFlag();
+	List<StockTradeDto> selectFromTempStockTrade();
 	int deletetempstocktrade();
 	int deleteRecmByKey(String stockId);
 	int insertRecmByKey(StockTradeDto stockTradeDto);
 	int inserttempstocktrade(StockTradeDto stockTradeDto);
+	int insertstocktrade(StockTradeDto stockTradeDto);
+	String selectNowStringDay();
 }

@@ -13,7 +13,8 @@ public interface DailyEntityMapper {
 	DailyOutDto selectByPrimaryKey(String stockId,String dayId);
     
     List<DailyOutDto> selectByDailyId(String dailyId);
-    List<DailyOutDto> selectstockpool();   
+    List<DailyOutDto> selectstockpool(); 
+    List<DailyOutDto> selectstockpoolhigh();
     List<DailyOutDto> selectMA(String stockId,String dayId);
  
     List<KLineDailyOutDto> selectKline(@Param("stockId")String stockId,@Param("day")int day);
@@ -21,7 +22,10 @@ public interface DailyEntityMapper {
     List<DailyOutDto> selectByIdMini(String stockId);
     List<DailyOutDto> selectMAListLow();
 
-	
+    List<DailyOutDto> selectFromStockTradeLow();
+    List<DailyOutDto> selectFromStockTradeMid();
+    List<DailyOutDto> selectFromStockTradeHigh();
+    
 	int insertUserCollection(String stockId,String userId);
     
     List<DailyOutDto> selectmyfavourite(String LoginUserId);

@@ -114,4 +114,19 @@ public class DailyFilter {
 		return kabuList;
 	}
 
+	public List<DailyOutDto> setMAHigh(List<DailyOutDto> list) throws Exception {
+		List<DailyOutDto> rtnList = new ArrayList<DailyOutDto>();
+		//假定参数
+		long AveDays = 3;
+		long minRate = 5;  //增长率的1000倍值
+		long maxRate = 10;	//增长率的1000倍值
+		//当抽出数据大于10条时，缩紧抽出条件
+		do {
+			rtnList = getList(list, AveDays, minRate, maxRate);
+			minRate = minRate+1;
+		}while(rtnList.size()>10);
+		//TODO 筛选后0条数据
+		return rtnList;
+	}
+	
 }
