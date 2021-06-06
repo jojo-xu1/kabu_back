@@ -133,4 +133,27 @@ public class DailyRecmBatch {
 			DailyTradeDao.inserttempstocktrade(stockTradeDto);
 		}
 	}	
+	private void WriteEndDay() throws Exception {
+		Date toDay=new Date();
+		 SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
+		 String dateNowStr = sdf.format(toDay);  
+			//获取今日份推荐股票
+			List<DailyOutDto> list = dailyDao.selectstockpool();
+			List<DailyOutDto> listToday = filter.setMA(list);
+		for (int j=0;j<listToday.size();j++) {
+			//插入新数据
+			String stockId = listToday.get(j).getStock().getStockId();
+			BigDecimal price =listToday.get(j).getEndPrice();
+			StockTradeDto stockTradeDto = new StockTradeDto();
+			stockTradeDto.setStockId(stockId);
+			stockTradeDto.setType(2);
+			stockTradeDto.setStartbuydate(dateNowStr);//开始购入日
+			stockTradeDto.setBuy_price(price);//
+			stockTradeDto.setSell_price(null);//
+			stockTradeDto.setEndselldate("");//停止出售日（买入日后九天）
+			stockTradeDto.setUpdateflag(0);
+			DailyTradeDao.inserttempstocktrade(stockTradeDto);
+		}
+	}	
+	
 }

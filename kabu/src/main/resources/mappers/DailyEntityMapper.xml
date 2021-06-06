@@ -81,6 +81,8 @@
   	<include refid="Base_Column_List" />
   	from realstock
   	where stock_id=#{stockId} 
+  	and start_price > 0
+  	and end_price > 0
   	ORDER BY  day_id DESC
 	LIMIT 1,#{day}
   </select>
