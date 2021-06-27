@@ -49,6 +49,20 @@
     (select stock_id from tempstocktrade)
   </update>
   
+   <update id="updateprice" parameterType="java.lang.String"  >
+    update stocktrade, 
+	(
+	select a.stock_id as stock_id,b.end_price as end_price
+	from stocktrade a,realstock b
+	where a.stock_id=b.stock_id
+	and b.day_id = (select max(day_id) from realstock)
+	) newdata 
+    <set >   
+     stocktrade.buy_price = newdata.end_price
+    </set>
+	where stocktrade.stock_id = newdata.stock_id
+  </update>
+  
   <select id="selectFromTempStockTrade" resultMap="BaseResultMap"  >
     select 
     <include refid="Base_Column_List" />

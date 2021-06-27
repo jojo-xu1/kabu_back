@@ -14,6 +14,7 @@ public class DailyFilter {
 	@Autowired
 	DailyEntityMapper dailyDao;
 
+	static private double GROUTH =12.0;
 	/**
 	 * 计算10日均值、20日均值、10日均值增长率、20日均值增长率并筛选
 	 * 
@@ -38,12 +39,13 @@ public class DailyFilter {
 	
 	public List<DailyOutDto> getList(List<DailyOutDto> list,Long AveDays,Long minRate,Long maxRate) throws Exception {
 		List<DailyOutDto> kabuList = new ArrayList<DailyOutDto>();
-		
+		int day = 20+AveDays.intValue()*2;
 		for (int i = list.size() - 1; i >= 0; i--) {
+			boolean aveerror=false;//成长超过一般
 			//获取股票数据
 			if(list.get(i).getStock() == null) {
 			}else {
-			List<DailyOutDto> DailyPriceList = dailyDao.selectByIdMini(list.get(i).getStock().getStockId());
+			List<DailyOutDto> DailyPriceList = dailyDao.selectByIdMiniEx(list.get(i).getStock().getStockId(),day);
 			
 			List<Double> tenDayAveList = new ArrayList<>(); //十日均线值list
 			List<Double> twnDayAveList = new ArrayList<>(); //二十日均线值list			
@@ -54,21 +56,32 @@ public class DailyFilter {
 				continue;//TODO 当可参考数据小于需要条数时的算法
 			}
 			//计算十日均线  二十日均线
+
 			for (int k=0;k<AveDays;k++) {
 				//设定初始值
 				double twnDayAve =0;
 				double tenDayAve = 0;
-				
+				double oldtwnDayAve=0;
+
 				for(int j =k;j<k+10;j++) {
 					tenDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ tenDayAve*(j-k))/(j-k+1);
 				}
 				for(int j =k;j<k+20;j++) {
 					twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
+					if(j==k)oldtwnDayAve=twnDayAve;
+					 BigDecimal newold = new BigDecimal(Math.abs(twnDayAve-oldtwnDayAve));
+				     BigDecimal old = new BigDecimal(oldtwnDayAve);
+			        if(oldtwnDayAve < 0.1 || newold.divide(old, 4, BigDecimal.ROUND_HALF_UP).doubleValue()*100 > GROUTH){
+			        	aveerror=true;
+			        	break;
+			        };
+			        oldtwnDayAve=twnDayAve;
 				}
+				if(aveerror)break;
 				tenDayAveList.add(tenDayAve);
 				twnDayAveList.add(twnDayAve);						
 			}
-			
+			if(aveerror)continue;
 			//二十日均线 均线变化率 
 			for (int k=0;k<AveDays-1;k++) {
 				double rate20 = (twnDayAveList.get(k)-twnDayAveList.get(k+1))*1000/twnDayAveList.get(k+1);
@@ -130,12 +143,13 @@ public class DailyFilter {
 	}
 	public List<DailyOutDto> getListHigh(List<DailyOutDto> list,Long AveDays,Long minRate,Long maxRate) throws Exception {
 		List<DailyOutDto> kabuList = new ArrayList<DailyOutDto>();
-		
+		int day = 80+AveDays.intValue()*2;
 		for (int i = list.size() - 1; i >= 0; i--) {
+			boolean aveerror=false;//成长超过一般
 			//获取股票数据
 			if(list.get(i).getStock() == null) {
 			}else {
-			List<DailyOutDto> DailyPriceList = dailyDao.selectByIdMini(list.get(i).getStock().getStockId());
+			List<DailyOutDto> DailyPriceList = dailyDao.selectByIdMiniEx(list.get(i).getStock().getStockId(),day);
 			
 			List<Double> tenDayAveList = new ArrayList<>(); //十日均线值list
 			List<Double> twnDayAveList = new ArrayList<>(); //二十日均线值list			
@@ -145,22 +159,33 @@ public class DailyFilter {
 			if(DailyPriceList.size() < (80 + AveDays)) {
 				continue;//TODO 当可参考数据小于需要条数时的算法
 			}
+
 			//计算十日均线  二十日均线
 			for (int k=0;k<AveDays;k++) {
 				//设定初始值
 				double twnDayAve =0;
 				double tenDayAve = 0;
-				
+				double oldtwnDayAve =0;
 				for(int j =k;j<k+60;j++) {
 					tenDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ tenDayAve*(j-k))/(j-k+1);
 				}
 				for(int j =k;j<k+80;j++) {
 					twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
+					
+					if(j==k)oldtwnDayAve=twnDayAve;
+					 BigDecimal newold = new BigDecimal(Math.abs(twnDayAve-oldtwnDayAve));
+				     BigDecimal old = new BigDecimal(oldtwnDayAve);
+			        if(oldtwnDayAve < 0.1 || newold.divide(old, 4, BigDecimal.ROUND_HALF_UP).doubleValue()*100 > GROUTH){
+			        	aveerror=true;
+			        	break;
+			        };
+			        oldtwnDayAve=twnDayAve;
 				}
+				if(aveerror)break;
 				tenDayAveList.add(tenDayAve);
 				twnDayAveList.add(twnDayAve);						
 			}
-			
+			if(aveerror)continue;
 			//二十日均线 均线变化率 
 			for (int k=0;k<AveDays-1;k++) {
 				double rate20 = (twnDayAveList.get(k)-twnDayAveList.get(k+1))*1000/twnDayAveList.get(k+1);

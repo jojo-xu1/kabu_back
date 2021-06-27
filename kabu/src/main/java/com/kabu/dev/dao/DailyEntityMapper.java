@@ -20,6 +20,7 @@ public interface DailyEntityMapper {
     List<KLineDailyOutDto> selectKline(@Param("stockId")String stockId,@Param("day")int day);
     
     List<DailyOutDto> selectByIdMini(String stockId);
+    List<DailyOutDto> selectByIdMiniEx(@Param("stockId")String stockId,@Param("day")int day);
     List<DailyOutDto> selectMAListLow();
 
     List<DailyOutDto> selectFromStockTradeLow();

@@ -11,6 +11,7 @@ public interface StockTradeEntityMapper {
 	int updateDailyRecmBykey(String stockId);
 	int updateStockTradeDate(String endselldate);
 	int updateStockTradeUpdateFlag();
+	int updateprice();
 	List<StockTradeDto> selectFromTempStockTrade();
 	int deletetempstocktrade();
 	int deleteRecmByKey(String stockId);

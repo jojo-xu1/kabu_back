@@ -90,6 +90,7 @@ public class DailyRecmBatch {
 		 WriteEndDay();//type =2
 		 DailyTradeDao.updateStockTradeUpdateFlag();//updateflag=1
 		 insertIntoStockTrade();
+		 DailyTradeDao.updateprice();
 		System.out.println("come to Dailybatch");
 	}
 	
