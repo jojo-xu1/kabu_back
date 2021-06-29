@@ -59,8 +59,12 @@ public class DailyController {
 		List<DailyOutDto> list = dailyDao.selectmyfavourite(LoginUserId);
 		
 		return list;
+	}
+	@GetMapping("transHistoryList")
+	public List<DailyOutDto> transHistoryList(String userId) {
+		String LoginUserId = userId;
+		List<DailyOutDto> list = dailyDao.transHistory(LoginUserId);
 		
-		
-		
+		return list;
 	}
 }

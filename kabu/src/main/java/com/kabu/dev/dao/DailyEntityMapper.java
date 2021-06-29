@@ -30,4 +30,5 @@ public interface DailyEntityMapper {
 	int insertUserCollection(String stockId,String userId);
     
     List<DailyOutDto> selectmyfavourite(String LoginUserId);
+    List<DailyOutDto> transHistory(String LoginUserId);
 }
