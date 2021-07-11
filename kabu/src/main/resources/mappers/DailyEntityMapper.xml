@@ -48,6 +48,11 @@
     values ( #{stockId,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},0 )
   </insert>
 
+  <insert id="hisUserColltInsert">
+    insert into historyusercollection ( stock_id, user_id, del_flag)
+    values ( #{stockId,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},0 )
+  </insert>
+
   <select id="selectmyfavourite" resultMap="BaseResultMap"  >
   select  st.startbuydate as day_id, st.buy_price as start_price, st.sell_price as end_price, '' as high_price, '' as low_price, 
   '' as vol,st.startbuydate as startbuydate,st.endselldate as endselldate, st.stock_id as stock_id
@@ -59,6 +64,14 @@
   select  st.startbuydate as day_id, st.buy_price as start_price, st.sell_price as end_price, '' as high_price, '' as low_price, 
   '' as vol,st.startbuydate as startbuydate,st.endselldate as endselldate, st.stock_id as stock_id
     from usercollection uc,stocktrade st
+    where uc.stock_id = st.stock_id
+    and st.endselldate > 0
+      and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
+  </select>
+  <select id="userTransHistory" resultMap="BaseResultMap"  >
+  select  st.startbuydate as day_id, st.buy_price as start_price, st.sell_price as end_price, '' as high_price, '' as low_price, 
+  '' as vol,st.startbuydate as startbuydate,st.endselldate as endselldate, st.stock_id as stock_id
+    from historyusercollection uc,historytrade st
     where uc.stock_id = st.stock_id
     and st.endselldate > 0
       and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
@@ -111,6 +124,11 @@
     <include refid="Base_Column_List" />
     from daily
     where day_id = #{dayId,jdbcType=VARCHAR}
+  </select>
+  <select id="selectHisColltById" resultType="com.kabu.dev.dto.UserCollectionDto">
+    select stock_id from historyusercollection
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+    and user_id = #{userId,jdbcType=VARCHAR}
   </select>
     <select id="selectstockpool" resultMap="BaseResultMap" >
     select 

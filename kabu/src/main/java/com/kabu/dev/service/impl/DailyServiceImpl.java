@@ -43,5 +43,16 @@ public class DailyServiceImpl implements DailyService{
 		dailyDao.insertUserCollection(stockId,userId);
 		
 	}
+	
+	@Override
+	public void hisUserColltInsert(String stockId,String userId) throws Exception {
+		//查询表中是否已存在该数据
+		List<UserCollectionDto> hisColltList = dailyDao.selectHisColltById(stockId,userId);
+		if(hisColltList.size() == 0) {
+		//向表中插入该条数据
+		dailyDao.hisUserColltInsert(stockId,userId);
+		}
+		
+	}
 
 }

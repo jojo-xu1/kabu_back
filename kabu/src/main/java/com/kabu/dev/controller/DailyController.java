@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.kabu.dev.dao.DailyEntityMapper;
 import com.kabu.dev.dto.DailyOutDto;
 import com.kabu.dev.dto.KLineOutDto;
-import com.kabu.dev.dto.UserCollectionDto;
 import com.kabu.dev.service.DailyService;
 import com.kabu.dev.vo.ResultJson;
 
@@ -53,6 +52,21 @@ public class DailyController {
 		
 		
 	}
+	
+	@GetMapping("hisUserColltInsert")
+	public String hisUserColltInsert(String stockId,String userId) {
+		try{
+			dailyService.hisUserColltInsert(stockId,userId);
+			return  "";
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return  "";
+			}
+		
+		
+	}
+	
 	@GetMapping("collectionList")
 	public List<DailyOutDto> listAll(String userId) {
 		String LoginUserId = userId;
@@ -65,6 +79,13 @@ public class DailyController {
 		String LoginUserId = userId;
 		List<DailyOutDto> list = dailyDao.transHistory(LoginUserId);
 		
+		return list;
+	}
+	
+	@GetMapping("userTransHistoryList")
+	public List<DailyOutDto> userTransHistoryList(String userId) {
+		String LoginUserId = userId;
+		List<DailyOutDto> list = dailyDao.userTransHistory(LoginUserId);
 		return list;
 	}
 }

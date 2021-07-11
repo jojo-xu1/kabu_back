@@ -14,7 +14,7 @@ import com.kabu.dev.dao.StockEntityMapper;
 import com.kabu.dev.dto.DailyOutDto;
 import com.kabu.dev.dto.StockOutDto;
 import com.kabu.dev.service.StockMasterService;
-import com.kabu.dev.util.DailyFilter;
+
 
 @Service
 public class StockMasterServiceImpl implements StockMasterService {
@@ -23,8 +23,7 @@ public class StockMasterServiceImpl implements StockMasterService {
 	DailyEntityMapper dailyDao;
 	@Autowired
 	StockEntityMapper stockDao;
-	@Autowired
-	DailyFilter filter;
+	
 
 	@Override
 	public Map<String, Object> queryDailyList(String num, String size, String dailyId, String flag) throws Exception {
