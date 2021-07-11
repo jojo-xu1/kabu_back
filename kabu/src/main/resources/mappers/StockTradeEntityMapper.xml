@@ -32,21 +32,88 @@
   </update>
   
   <update id="updateStockTradeDate" parameterType="java.lang.String"  >
-    update stocktrade 
-    <set >   
-     endselldate = #{endselldate,jdbcType=VARCHAR}
-    </set>
-    where type = 2 and updateflag =0 and stock_id not in
+     update stocktrade,
+   (
+     select stock_id,today_price
+     from stocktrade 
+     where 1=1
+     and stock_id not in
     (select stock_id from tempstocktrade  where type = 2)
+     )newdata
+    <set >   
+     stocktrade.endselldate = #{endselldate,jdbcType=VARCHAR},
+     stocktrade.sell_price = newdata.today_price
+    </set>
+  	where stocktrade.stock_id  =newdata.stock_id
+  	and stocktrade.type = 2
+  	and stocktrade.updateflag = 0
   </update>
   
+   <update id="updateStockDateByWin" parameterType="java.lang.String"  >
+    update stocktrade,
+   (
+     select stock_id,today_price
+     from stocktrade 
+     where 1=1
+     and buy_price >1.0
+     and today_price >1.0
+     and (today_price-buy_price)/buy_price*100 > 2.0
+     )newdata
+    <set >   
+     stocktrade.endselldate = #{endselldate,jdbcType=VARCHAR},
+     stocktrade.sell_price = newdata.today_price
+    </set>
+    where stocktrade.stock_id  =newdata.stock_id
+     and stocktrade.type = 2
+     and stocktrade.updateflag = 0
+  </update> 
+  
+   <update id="updateStockDateByLowRisk" parameterType="java.lang.String"  >
+    update stocktrade,
+   (
+     select stock_id,today_price
+     from stocktrade 
+     where 1=1
+     and buy_price >1.0
+     and today_price >1.0
+     and (today_price-buy_price)/buy_price*100 > 5.0
+     )newdata
+    <set >   
+     stocktrade.endselldate = #{endselldate,jdbcType=VARCHAR},
+     stocktrade.sell_price = newdata.today_price
+    </set>
+    where stocktrade.stock_id  =newdata.stock_id
+     and stocktrade.type = 1
+     and stocktrade.updateflag = 0
+  </update> 
+     <update id="updateStockDateByMidRisk" parameterType="java.lang.String"  >
+    update stocktrade,
+   (
+     select stock_id,today_price
+     from stocktrade 
+     where 1=1
+     and buy_price >1.0
+     and today_price >1.0
+     and (today_price-buy_price)/buy_price*100 > 10.0
+     )newdata
+    <set >   
+     stocktrade.endselldate = #{endselldate,jdbcType=VARCHAR},
+     stocktrade.sell_price = newdata.today_price
+    </set>
+    where stocktrade.stock_id  =newdata.stock_id
+     and stocktrade.type = 3
+     and stocktrade.updateflag = 0
+  </update> 
     <update id="updateStockTradeUpdateFlag" parameterType="java.lang.String"  >
     update stocktrade 
     <set >   
      updateflag = 1
     </set>
-    where updateflag =0 and stock_id not in
+    where updateflag =0 
+    and( stock_id not in
     (select stock_id from tempstocktrade)
+     or endselldate != ""
+    )
   </update>
   
    <update id="updateprice" parameterType="java.lang.String"  >
@@ -58,7 +125,7 @@
 	and b.day_id = (select max(day_id) from realstock)
 	) newdata 
     <set >   
-     stocktrade.buy_price = newdata.end_price
+     stocktrade.today_price = newdata.end_price
     </set>
 	where stocktrade.stock_id = newdata.stock_id
   </update>

@@ -15,6 +15,11 @@ public class DailyFilter {
 	DailyEntityMapper dailyDao;
 
 	static private double GROUTH =12.0;
+	static private double MINRATE =1.0;
+	static private double MAXRATE =3.5;
+	static private int DATA_20 =20;
+	static private int DATA_10 =10;
+	static private int MAX_STOCK =7;
 	/**
 	 * 计算10日均值、20日均值、10日均值增长率、20日均值增长率并筛选
 	 * 
@@ -26,20 +31,25 @@ public class DailyFilter {
 		List<DailyOutDto> rtnList = new ArrayList<DailyOutDto>();
 		//假定参数
 		long AveDays = 3;
-		long minRate = 5;  //增长率的1000倍值
-		long maxRate = 10;	//增长率的1000倍值
+		long minRate = 2;  //增长率的1000倍值
+		long maxRate = 5;	//增长率的1000倍值
 		//当抽出数据大于10条时，缩紧抽出条件
-		do {
+		//do {
 			rtnList = getList(list, AveDays, minRate, maxRate);
 			minRate = minRate+1;
-		}while(rtnList.size()>10);
+		//}while(rtnList.size()>10);
 		//TODO 筛选后0条数据
 		return rtnList;
 	}
 	
 	public List<DailyOutDto> getList(List<DailyOutDto> list,Long AveDays,Long minRate,Long maxRate) throws Exception {
 		List<DailyOutDto> kabuList = new ArrayList<DailyOutDto>();
-		int day = 20+AveDays.intValue()*2;
+		int day = (DATA_20+AveDays.intValue())*2;
+		int nodata =0;
+		int stockno=0;
+		int step1,step2,step3,step4,step5;
+		step1= step2 = step3 = step4 = step5 = 0;
+		System.out.println(list.size());
 		for (int i = list.size() - 1; i >= 0; i--) {
 			boolean aveerror=false;//成长超过一般
 			//获取股票数据
@@ -52,31 +62,37 @@ public class DailyFilter {
 			List<Double> twnUpRateList = new ArrayList<>(); //二十日均线值增长率list
 			
 			//条件一：可参考数据大于需要条数
-			if(DailyPriceList.size() < (20 + AveDays)) {
+			if(DailyPriceList.size() < day) {
+				nodata++;
 				continue;//TODO 当可参考数据小于需要条数时的算法
 			}
 			//计算十日均线  二十日均线
-
-			for (int k=0;k<AveDays;k++) {
+			stockno++;
+			
+			for (int k=0;k<DATA_10;k++) {//
 				//设定初始值
 				double twnDayAve =0;
 				double tenDayAve = 0;
 				double oldtwnDayAve=0;
 
-				for(int j =k;j<k+10;j++) {
-					tenDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ tenDayAve*(j-k))/(j-k+1);
+				for(int j =k;j<k+DATA_10;j++) {
+					//tenDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ tenDayAve*(j-k))/(j-k+1);
+					tenDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
 				}
-				for(int j =k;j<k+20;j++) {
-					twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
-					if(j==k)oldtwnDayAve=twnDayAve;
+				tenDayAve = tenDayAve/10.0;
+				for(int j =k;j<k+DATA_20;j++) {
+					//twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
+					twnDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
+					/*if(j==k)oldtwnDayAve=twnDayAve;
 					 BigDecimal newold = new BigDecimal(Math.abs(twnDayAve-oldtwnDayAve));
 				     BigDecimal old = new BigDecimal(oldtwnDayAve);
 			        if(oldtwnDayAve < 0.1 || newold.divide(old, 4, BigDecimal.ROUND_HALF_UP).doubleValue()*100 > GROUTH){
 			        	aveerror=true;
 			        	break;
 			        };
-			        oldtwnDayAve=twnDayAve;
+			        oldtwnDayAve=twnDayAve;*/
 				}
+				twnDayAve = twnDayAve/20.0;
 				if(aveerror)break;
 				tenDayAveList.add(tenDayAve);
 				twnDayAveList.add(twnDayAve);						
@@ -87,43 +103,76 @@ public class DailyFilter {
 				double rate20 = (twnDayAveList.get(k)-twnDayAveList.get(k+1))*1000/twnDayAveList.get(k+1);
 				twnUpRateList.add(rate20);
 			}
-			
+			step1++;
 			//条件二：十日均线和二十日均线走势向上   ※可以省略
 			if(tenDayAveList.get(0)<tenDayAveList.get(1) || twnDayAveList.get(0)<twnDayAveList.get(1)) {
 				continue;
 			}
+			if(twnDayAveList.get(DATA_10-2)<twnDayAveList.get(DATA_10-1)) {
+				continue;
+			}
+			step2++;
 			boolean flag = false;
 			for (int k=0;k<AveDays;k++) {
 				
-				//条件三：10日线连续在20日线之上
-				if(tenDayAveList.get(k)<tenDayAveList.get(k)) {
-					flag = true;
-					break;
-					
-				}	
-				
-				//条件四：二十日均线在minRate到maxRate之间 
+				//条件三：二十日均线在minRate到maxRate之间 
 				if(k<AveDays-1) {
-					if(twnUpRateList.get(k) < minRate ||twnUpRateList.get(k)>maxRate) {
+					if(twnUpRateList.get(k) < MINRATE ||twnUpRateList.get(k)>MAXRATE) {
 						flag = true;
 						break;
 					}
-				}
+				}			
 			}
 			
 			if(flag == true) {
 				continue;
 			}
-
-
+			flag = false;
+			step3++;
+			//条件四：10日线连续在20日线之上
+			for (int k=0;k<=AveDays;k++) {
+				//条件四：10日线连续在20日线之上形成交叉
+				if(tenDayAveList.get(k)<twnDayAveList.get(k)) {
+					flag = true;
+					break;
+					
+				}	
+			}
+			if(flag == true) {
+				continue;
+			}
+			step4++;
+			for (int k=DATA_10-1;k>=DATA_10-AveDays.intValue()-1;k--) {
+				//条件四：10日线连续在20日线之上形成交叉
+				if(tenDayAveList.get(k)>twnDayAveList.get(k)) {
+					flag = true;
+					break;
+					
+				}	
+			}
+			if(flag == true) {
+				continue;
+			}
+			step5++;
 			DailyOutDto rtnDto = list.get(i);
 			rtnDto.setMa10((Double) tenDayAveList.get(0)); // 10日均值
 			rtnDto.setMa20((Double) twnDayAveList.get(0)); // 20日均值
 			rtnDto.setMa20UpRate(twnUpRateList.get(0)); // 20日均值变化率
 			kabuList.add(rtnDto);
-			
+			if(kabuList.size()>MAX_STOCK)return kabuList;
 		}
+			
 	}
+		System.out.println("step1=");
+		System.out.println(step1);
+		System.out.println("step2=");
+		System.out.println(step2);	
+		System.out.println("step3=");
+		System.out.println(step3);
+		System.out.println("step4=");
+		System.out.println(step4);	
+		System.out.println("step5=");
+		System.out.println(step5);
 		return kabuList;
 	}
 

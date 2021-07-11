@@ -102,6 +102,7 @@
     <include refid="Base_Column_List" />
     from realstock
     where stock_id = #{stockId,jdbcType=VARCHAR}
+    and market in (1,2,512)
     order by day_id desc
     LIMIT 0,#{day}
   </select>
@@ -115,15 +116,19 @@
     select 
     <include refid="Base_Column_List" />
     from realstock
-     where stock_id in (select DISTINCT(stock_id) from daily)
+     where market in (1,2)
      and day_id = (select max(day_id) from realstock)
+     and stock_id not in (select stock_id from stockmaster where industry='ETF')
+     and stock_id not in('4342')
   </select>
     <select id="selectstockpoolhigh" resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />
     from realstock
-     where market in (1,2)
+     where market in (1,2,512)
      and day_id = (select max(day_id) from realstock)
+     and stock_id not in (select stock_id from stockmaster where industry='ETF')
+     and stock_id not in('4342')
   </select>
   <select id="selectKline" resultMap="KlineMap">
   	select 

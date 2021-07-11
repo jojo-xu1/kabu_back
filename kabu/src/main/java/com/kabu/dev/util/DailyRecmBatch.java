@@ -86,11 +86,16 @@ public class DailyRecmBatch {
 		 DailyTradeDao.deletetempstocktrade();
 		 DailyByincome();//by income
 		 DailyByMA();//by MA10 ,MA20
+		
 		 DailyByMAHigh();//by MA60 ,MA80
+		 DailyTradeDao.updateprice();
 		 WriteEndDay();//type =2
+		 DailyTradeDao.updateStockDateByWin();
+		 DailyTradeDao.updateStockDateByMidRisk();
+		 DailyTradeDao.updateStockDateByLowRisk();
 		 DailyTradeDao.updateStockTradeUpdateFlag();//updateflag=1
 		 insertIntoStockTrade();
-		 DailyTradeDao.updateprice();
+
 		System.out.println("come to Dailybatch");
 	}
 	
