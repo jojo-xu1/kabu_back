@@ -75,6 +75,8 @@
     where uc.stock_id = st.stock_id
     and st.endselldate > 0
       and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
+      and st.del_flag = 0
+      order by st.stock_id
   </select>
 
   <select id="selectFromStockTradeLow" resultMap="BaseResultMap"  >
