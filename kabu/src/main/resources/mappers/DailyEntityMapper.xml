@@ -73,8 +73,8 @@
   '' as vol,st.startbuydate as startbuydate,st.endselldate as endselldate, st.stock_id as stock_id
     from historyusercollection uc,historytrade st
     where uc.stock_id = st.stock_id
-    and st.endselldate > 0
-      and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
+    and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
+      and cast(st.endselldate as SIGNED) >= cast(#{transDate,jdbcType=VARCHAR} as SIGNED) 
       and st.del_flag = 0
       order by st.stock_id
   </select>

@@ -78,14 +78,13 @@ public class DailyController {
 	public List<DailyOutDto> transHistoryList(String userId) {
 		String LoginUserId = userId;
 		List<DailyOutDto> list = dailyDao.transHistory(LoginUserId);
-		
 		return list;
 	}
 	
 	@GetMapping("userTransHistoryList")
-	public List<DailyOutDto> userTransHistoryList(String userId) {
+	public List<DailyOutDto> userTransHistoryList(String userId,String transDate) {
 		String LoginUserId = userId;
-		List<DailyOutDto> list = dailyDao.userTransHistory(LoginUserId);
+		List<DailyOutDto> list = dailyDao.userTransHistory(LoginUserId,transDate);
 		return list;
 	}
 }
