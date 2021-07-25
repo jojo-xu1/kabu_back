@@ -121,6 +121,18 @@
     order by day_id desc
     LIMIT 0,#{day}
   </select>
+  
+   <select id="selectHisListById"  resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from realstock
+    where stock_id = #{stockId,jdbcType=VARCHAR}
+    and market in (1,2,512)
+    and  #{basedate,jdbcType=VARCHAR} > day_id 
+    order by day_id desc
+    LIMIT 0,#{day}
+  </select>
+  
   <select id="selectByDailyId" resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />

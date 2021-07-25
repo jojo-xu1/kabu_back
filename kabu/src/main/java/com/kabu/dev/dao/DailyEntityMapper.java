@@ -21,6 +21,7 @@ public interface DailyEntityMapper {
     
     List<DailyOutDto> selectByIdMini(String stockId);
     List<DailyOutDto> selectByIdMiniEx(@Param("stockId")String stockId,@Param("day")int day);
+    List<DailyOutDto> selectHisListById(@Param("stockId")String stockId,@Param("day")int day,@Param("basedate")String basedate);
     List<DailyOutDto> selectMAListLow();
 
     List<DailyOutDto> selectFromStockTradeLow();

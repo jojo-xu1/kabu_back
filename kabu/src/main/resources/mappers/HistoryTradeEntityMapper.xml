@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kabu.dev.dao.HistoryTradeEntityMapper" >
+<resultMap id="BaseResultMap" type="com.kabu.dev.dto.StockTradeDto" >
+    <id column="stock_id" property="stockId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="startbuydate" property="startbuydate" jdbcType="VARCHAR" />
+    <result column="buy_price" property="buy_price" jdbcType="DECIMAL" />
+    <result column="sell_price" property="sell_price" jdbcType="DECIMAL" />
+    <result column="endselldate" property="endselldate" jdbcType="VARCHAR" />
+    <result column="updateflag" property="updateflag" jdbcType="INTEGER" />
+  </resultMap>
+   <resultMap id="DailyOutMap" type="com.kabu.dev.dto.DailyOutDto" >
+    <result column="day_id" property="dayId" jdbcType="VARCHAR" />
+    <result column="start_price" property="startPrice" jdbcType="DECIMAL" />
+    <result column="end_price" property="endPrice" jdbcType="DECIMAL" />
+    <result column="high_price" property="highPrice" jdbcType="DECIMAL" />
+    <result column="low_price" property="lowPrice" jdbcType="DECIMAL" />
+    <result column="vol" property="vol" jdbcType="BIGINT" />
+    <result column="startbuydate" property="startbuydate" jdbcType="VARCHAR" />
+    <result column="endselldate" property="endselldate" jdbcType="VARCHAR" />
+    <association property="stock" column="stock_id" select="com.kabu.dev.dao.StockEntityMapper.selectByPrimaryKey" ></association>
+  </resultMap>
+<sql id="Base_Column_List" >
+    stock_id, type,startbuydate, buy_price, sell_price, endselldate, updateflag
+</sql>
+<sql id="Base_Column_List02" >
+    stock_id, day_id, start_price, end_price, high_price, low_price, vol,'' as startbuydate,'' as endselldate
+  </sql>
+<delete id="deletetempstocktrade"  parameterType="java.lang.String" >
+    delete from temphistorytrade
+</delete>
+
+ <select id="selectstockpool" resultMap="DailyOutMap" >
+    select 
+    <include refid="Base_Column_List02" />
+    from realstock
+     where market in (1,2)
+     and day_id = #{dateNowStr,jdbcType=VARCHAR}
+     and stock_id not in (select stock_id from stockmaster where industry='ETF')
+     and stock_id not in('4342')
+  </select>
+   <insert id="inserttempstocktrade" parameterType="com.kabu.dev.dto.StockTradeDto" >
+   insert into temphistorytrade (stock_id,startbuydate,type,buy_price,sell_price,endselldate,updateflag)
+   values (#{stockId,jdbcType=VARCHAR},#{startbuydate,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},
+   #{buy_price,jdbcType=DECIMAL },#{sell_price,jdbcType=DECIMAL},
+   #{endselldate,jdbcType=VARCHAR},#{updateflag,jdbcType=INTEGER})
+  </insert>
+  
+  <update id="updateprice" parameterType="java.lang.String"  >
+    update stockhistorytrade, 
+	(
+	select a.stock_id as stock_id,b.end_price as end_price
+	from stockhistorytrade a,realstock b
+	where a.stock_id=b.stock_id
+	and b.day_id = #{endselldate,jdbcType=VARCHAR}
+	) newdata 
+    <set >   
+     stockhistorytrade.today_price = newdata.end_price
+    </set>
+	where stockhistorytrade.stock_id = newdata.stock_id
+  </update>
+  
+  <update id="updateStockTradeDate" parameterType="java.lang.String"  >
+     update stockhistorytrade,
+   (
+     select stock_id,today_price
+     from stockhistorytrade 
+     where 1=1
+     and stock_id not in
+    (select stock_id from temphistorytrade  where type = 2)
+     )newdata
+    <set >   
+     stockhistorytrade.endselldate = #{endselldate,jdbcType=VARCHAR},
+     stockhistorytrade.sell_price = newdata.today_price
+    </set>
+  	where stockhistorytrade.stock_id  =newdata.stock_id
+  	and stockhistorytrade.type = 2
+  	and stockhistorytrade.updateflag = 0
+  </update>
+  
+  <update id="updateStockDate" parameterType="java.lang.String"  >
+    update stockhistorytrade,
+   (
+     select stock_id,today_price
+     from stockhistorytrade 
+     where 1=1
+     and buy_price >1.0
+     and today_price >1.0
+     and (today_price-buy_price)/buy_price*100 > 2.0
+     )newdata
+    <set >   
+     stockhistorytrade.endselldate = #{endselldate,jdbcType=VARCHAR},
+     stockhistorytrade.sell_price = newdata.today_price
+    </set>
+    where stockhistorytrade.stock_id  =newdata.stock_id
+     and stockhistorytrade.type = 2
+     and stockhistorytrade.updateflag = 0
+  </update> 
+  
+  <update id="updateStockTradeUpdateFlag" parameterType="java.lang.String"  >
+    update stockhistorytrade 
+    <set >   
+     updateflag = 1
+    </set>
+    where updateflag =0 
+    and( stock_id not in
+    (select stock_id from temphistorytrade)
+     or endselldate != ""
+    )
+  </update>
+  
+   <select id="selectFromTempStockTrade" resultMap="BaseResultMap"  >
+    select 
+    <include refid="Base_Column_List" />
+    from temphistorytrade
+    where stock_id not in
+    (select stock_id from stockhistorytrade where updateflag =0)
+</select>
+  
+<insert id="insertstocktrade" parameterType="com.kabu.dev.dto.StockHistoryTradeDto" >
+   insert into stockhistorytrade (stock_id,startbuydate,type,basedate,buy_price,sell_price,endselldate,updateflag)
+   values (#{stockId,jdbcType=VARCHAR},#{startbuydate,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},
+   #{basedate,jdbcType=DECIMAL },#{buy_price,jdbcType=DECIMAL },#{sell_price,jdbcType=DECIMAL},
+   #{endselldate,jdbcType=VARCHAR},#{updateflag,jdbcType=INTEGER})
+  </insert>  
+  
+</mapper>
