@@ -74,7 +74,7 @@
     from historyusercollection uc,stockhistorytrade st
     where uc.stock_id = st.stock_id
     and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
-      and cast(st.endselldate as SIGNED) >= cast(#{transDate,jdbcType=VARCHAR} as SIGNED) 
+      and st.basedate >=#{transDate,jdbcType=VARCHAR}
       order by st.stock_id
   </select>
 
