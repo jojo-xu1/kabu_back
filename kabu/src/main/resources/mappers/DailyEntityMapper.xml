@@ -71,11 +71,10 @@
   <select id="userTransHistory" resultMap="BaseResultMap"  >
   select  st.startbuydate as day_id, st.buy_price as start_price, st.sell_price as end_price, '' as high_price, '' as low_price, 
   '' as vol,st.startbuydate as startbuydate,st.endselldate as endselldate, st.stock_id as stock_id
-    from historyusercollection uc,historytrade st
+    from historyusercollection uc,stockhistorytrade st
     where uc.stock_id = st.stock_id
     and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
       and cast(st.endselldate as SIGNED) >= cast(#{transDate,jdbcType=VARCHAR} as SIGNED) 
-      and st.del_flag = 0
       order by st.stock_id
   </select>
 
