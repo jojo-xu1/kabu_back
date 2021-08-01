@@ -53,6 +53,13 @@
     values ( #{stockId,jdbcType=VARCHAR},#{userId,jdbcType=VARCHAR},0 )
   </insert>
 
+<select id="hisUserColltList" resultType="java.lang.Integer" >
+  	select 
+  	stock_id
+  	from historyusercollection
+  	where user_id= #{LoginUserId,jdbcType=VARCHAR}
+  </select>
+
   <select id="selectmyfavourite" resultMap="BaseResultMap"  >
   select  st.startbuydate as day_id, st.buy_price as start_price, st.sell_price as end_price, '' as high_price, '' as low_price, 
   '' as vol,st.startbuydate as startbuydate,st.endselldate as endselldate, st.stock_id as stock_id
@@ -177,4 +184,5 @@
   	ORDER BY  day_id DESC
 	LIMIT 0,#{day}
   </select>
+  
 </mapper>

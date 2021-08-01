@@ -69,8 +69,13 @@ public class DailyController {
 				e.printStackTrace();
 				return  "";
 			}
-		
-		
+	}
+	
+	@GetMapping("hisUserColltList")
+	public List<Integer> hisUserColltList(String userId) {
+		String LoginUserId = userId;
+		List<Integer> list = dailyDao.hisUserColltList(LoginUserId);
+		return list;
 	}
 	
 	@GetMapping("collectionList")
@@ -80,6 +85,7 @@ public class DailyController {
 		
 		return list;
 	}
+	
 	@GetMapping("transHistoryList")
 	public List<DailyOutDto> transHistoryList(String userId) {
 		String LoginUserId = userId;

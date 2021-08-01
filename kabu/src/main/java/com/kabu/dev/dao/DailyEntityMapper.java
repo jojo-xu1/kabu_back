@@ -35,5 +35,6 @@ public interface DailyEntityMapper {
     List<DailyOutDto> userTransHistory(String LoginUserId,String transDate,List<Integer> stockIdList);
     int deleteHisColltByUserId(String userId);
     int hisUserColltInsert(Integer stockId,String userId);
+    List<Integer> hisUserColltList(String userId);
     
 }
