@@ -35,8 +35,8 @@ public class HistoryBatch {
 	
 	public void Dailybatch() throws Exception { 
 		//设定日期
-		 dateNowStr = "20210601";  
-		 dateNowEnd  =  "20210602"; 
+		 dateNowStr = "20210602";  
+		 dateNowEnd  =  "20210605"; 
 		 
 		 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
 		 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
@@ -48,8 +48,12 @@ public class HistoryBatch {
 		     String basedate = sdf.format(current);
 			//删除临时表单
 			 DailyTradeDao.deletetempstocktrade();
+			//计算当日低风险股票
+			 DailyByMA1(basedate);
+			//计算当日中风险股票
+			 DailyByMA3(basedate);
 			 //计算当日高风险股票
-			 DailyByMA(basedate);//by MA10 ,MA20
+			 DailyByMA2(basedate);
 			 //更新最终交易价格
 			 DailyTradeDao.updateprice(basedate);
 			//更新交易结束日期
@@ -74,8 +78,25 @@ public class HistoryBatch {
 		System.out.println("come to Dailybatch");
 	}
 	
+	private void DailyByMA1(String dateNowStr) throws Exception {
+		List<DailyOutDto> listTodayLow= DailyTradeDao.selectstockpoollow(dateNowStr);
+		for (int j=0;j<listTodayLow.size();j++) {
+			//插入新数据
+			String stockId = listTodayLow.get(j).getStock().getStockId();
+			BigDecimal price =listTodayLow.get(j).getEndPrice();
+			StockTradeDto stockTradeDto = new StockTradeDto();
+			stockTradeDto.setStockId(stockId);
+			stockTradeDto.setType(1);
+			stockTradeDto.setStartbuydate(dateNowStr);//开始购入日
+			stockTradeDto.setBuy_price(price);//
+			stockTradeDto.setSell_price(null);//
+			stockTradeDto.setEndselldate("");//停止出售日（买入日后九天）
+			stockTradeDto.setUpdateflag(0);
+			DailyTradeDao.inserttempstocktrade(stockTradeDto);
+		}
+	}
 	
-	private void DailyByMA(String dateNowStr) throws Exception { 
+	private void DailyByMA2(String dateNowStr) throws Exception { 
 			//获取当日推荐股票
 			List<DailyOutDto> list = DailyTradeDao.selectstockpool(dateNowStr);
 			List<DailyOutDto> listToday = filter.setMA(list,dateNowStr);
@@ -94,7 +115,25 @@ public class HistoryBatch {
 			DailyTradeDao.inserttempstocktrade(stockTradeDto);
 		}
 	}
-	
+	private void DailyByMA3(String dateNowStr) throws Exception { 
+		//获取今日份推荐股票
+		List<DailyOutDto> list = DailyTradeDao.selectstockpoolhigh(dateNowStr);
+		List<DailyOutDto> listToday = filter.setMAHigh(list);
+	for (int j=0;j<listToday.size();j++) {
+		//插入新数据
+		String stockId = listToday.get(j).getStock().getStockId();
+		BigDecimal price =listToday.get(j).getEndPrice();
+		StockTradeDto stockTradeDto = new StockTradeDto();
+		stockTradeDto.setStockId(stockId);
+		stockTradeDto.setType(3);
+		stockTradeDto.setStartbuydate(dateNowStr);//开始购入日
+		stockTradeDto.setBuy_price(price);//
+		stockTradeDto.setSell_price(null);//
+		stockTradeDto.setEndselldate("");//停止出售日（买入日后九天）
+		stockTradeDto.setUpdateflag(0);
+		DailyTradeDao.inserttempstocktrade(stockTradeDto);
+	}
+}
 
 	private void insertIntoStockTrade(String dateNowStr) throws Exception {
 			//获取今日份推荐股票

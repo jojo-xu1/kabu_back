@@ -54,7 +54,7 @@ public class DailyFilterHistory {
 		int stockno=0;
 		int step1,step2,step3,step4,step5;
 		step1= step2 = step3 = step4 = step5 = 0;
-		System.out.println(list.size());
+		
 		for (int i = list.size() - 1; i >= 0; i--) {
 			boolean aveerror=false;//成长超过一般
 			//获取股票数据
@@ -208,8 +208,8 @@ public class DailyFilterHistory {
 			List<Double> sixtyDayAveList = new ArrayList<>(); //六十日均线值list
 			List<Double> eightyDayAveList = new ArrayList<>(); //八十日均线值list			
 			List<Double> eightyUpRateList = new ArrayList<>(); //八十日均线值增长率list
-			
 			//条件一：可参考数据大于需要条数
+			
 			if(DailyPriceList.size() < (DATA_80 + AveDays)) {
 				continue;//TODO 当可参考数据小于需要条数时的算法
 			}
@@ -242,7 +242,7 @@ public class DailyFilterHistory {
 				sixtyDayAveList.add(sixtyDayAve);
 				eightyDayAveList.add(eightyDayAve);						
 			}
-			if(aveerror)continue;
+		if(aveerror)continue;
 			//八十日均线 均线变化率 
 			for (int k=0;k<AveDays-1;k++) {
 				double rate80 = (eightyDayAveList.get(k)-eightyDayAveList.get(k+1))*1000/eightyDayAveList.get(k+1);
@@ -253,9 +253,15 @@ public class DailyFilterHistory {
 			if(sixtyDayAveList.get(0)<sixtyDayAveList.get(1) || eightyDayAveList.get(0)<eightyDayAveList.get(1)) {
 				continue;
 			}
-			if(eightyDayAveList.get(DATA_60-2)<eightyDayAveList.get(DATA_60-1)) {
+			//？？条件设定目的确认中。。。。。
+//			if(eightyDayAveList.get(DATA_60-2)<eightyDayAveList.get(DATA_60-1)) {
+//				continue;
+//			}
+			if(eightyDayAveList.get((int) (AveDays-2))<eightyDayAveList.get((int) (AveDays-1))) {
 				continue;
 			}
+			
+			
 			boolean flag = false;
 			for (int k=0;k<AveDays;k++) {
 				

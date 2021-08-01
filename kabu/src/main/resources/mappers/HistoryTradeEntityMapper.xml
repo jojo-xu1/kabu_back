@@ -31,6 +31,17 @@
     delete from temphistorytrade
 </delete>
 
+  <select id="selectstockpoollow" resultMap="DailyOutMap"  >
+  select  rel.day_id as day_id, rel.start_price as start_price, rel.end_price as end_price, rel.high_price as high_price, rel.low_price as low_price, 
+  rel.vol as vol,'' as startbuydate,'' as endselldate, rel.stock_id as stock_id
+   from income inc,realstock rel
+    where rel.stock_id=inc.stock_id
+     and rel.day_id =#{dateNowStr,jdbcType=VARCHAR}
+     order by ROUND(CAST(inc.haitou_rate AS DOUBLE)/rel.end_price*100, 2) desc
+     limit 2,9
+  </select>
+  
+
  <select id="selectstockpool" resultMap="DailyOutMap" >
     select 
     <include refid="Base_Column_List02" />
@@ -40,6 +51,17 @@
      and stock_id not in (select stock_id from stockmaster where industry='ETF')
      and stock_id not in('4342')
   </select>
+  
+  <select id="selectstockpoolhigh" resultMap="DailyOutMap" >
+    select 
+    <include refid="Base_Column_List02" />
+    from realstock
+     where market in (1,2,512)
+     and day_id = #{dateNowStr,jdbcType=VARCHAR}
+     and stock_id not in (select stock_id from stockmaster where industry='ETF')
+     and stock_id not in('4342')
+  </select>
+  
    <insert id="inserttempstocktrade" parameterType="com.kabu.dev.dto.StockTradeDto" >
    insert into temphistorytrade (stock_id,startbuydate,type,buy_price,sell_price,endselldate,updateflag)
    values (#{stockId,jdbcType=VARCHAR},#{startbuydate,jdbcType=VARCHAR},#{type,jdbcType=INTEGER},

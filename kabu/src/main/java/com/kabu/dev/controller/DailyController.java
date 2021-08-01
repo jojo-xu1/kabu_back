@@ -1,6 +1,9 @@
 package com.kabu.dev.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -54,9 +57,12 @@ public class DailyController {
 	}
 	
 	@GetMapping("hisUserColltInsert")
-	public String hisUserColltInsert(String stockId,String userId) {
+	public String hisUserColltInsert(int[] stockIdList,String userId) {
 		try{
-			dailyService.hisUserColltInsert(stockId,userId);
+			//int数组转list型
+			List<Integer> stockList = Arrays.stream(stockIdList).boxed().collect(Collectors.toList());
+			
+			dailyService.hisUserColltInsert(stockList,userId);
 			return  "";
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -82,9 +88,11 @@ public class DailyController {
 	}
 	
 	@GetMapping("userTransHistoryList")
-	public List<DailyOutDto> userTransHistoryList(String userId,String transDate) {
+	public List<DailyOutDto> userTransHistoryList(String userId,String transDate,int[] stockIdList) {
 		String LoginUserId = userId;
-		List<DailyOutDto> list = dailyDao.userTransHistory(LoginUserId,transDate);
+		//int数组转list型
+		List<Integer> stockList = Arrays.stream(stockIdList).boxed().collect(Collectors.toList());
+		List<DailyOutDto> list = dailyDao.userTransHistory(LoginUserId,transDate,stockList);
 		return list;
 	}
 }

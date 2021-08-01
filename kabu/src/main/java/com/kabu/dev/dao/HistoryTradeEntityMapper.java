@@ -11,7 +11,10 @@ public interface HistoryTradeEntityMapper {
 	
 	
 	int deletetempstocktrade();
+	List<DailyOutDto> selectstockpoollow(String dateNowStr);
 	List<DailyOutDto> selectstockpool(String dateNowStr);
+	List<DailyOutDto> selectstockpoolhigh(String dateNowStr);
+	
 	int updateprice(String endselldate);
 	int updateStockDate();
 	int updateStockTradeUpdateFlag();

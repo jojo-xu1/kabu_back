@@ -73,6 +73,13 @@
   '' as vol,st.startbuydate as startbuydate,st.endselldate as endselldate, st.stock_id as stock_id
     from historyusercollection uc,stockhistorytrade st
     where uc.stock_id = st.stock_id
+  <if test="stockIdList!= null and stockIdList.size() >0">
+    and st.stock_id in
+	  <foreach item="item" index="index" collection="stockIdList"
+	      open="(" separator="," close=")">
+	        #{item}
+	  </foreach>
+  </if>
     and uc.user_id= #{LoginUserId,jdbcType=VARCHAR}
       and st.basedate >=#{transDate,jdbcType=VARCHAR}
       order by st.stock_id
@@ -138,11 +145,10 @@
     from daily
     where day_id = #{dayId,jdbcType=VARCHAR}
   </select>
-  <select id="selectHisColltById" resultType="com.kabu.dev.dto.UserCollectionDto">
-    select stock_id from historyusercollection
-    where stock_id = #{stockId,jdbcType=VARCHAR}
-    and user_id = #{userId,jdbcType=VARCHAR}
-  </select>
+  <delete id="deleteHisColltByUserId" >
+    delete from historyusercollection
+    where user_id = #{userId,jdbcType=VARCHAR}
+  </delete>
     <select id="selectstockpool" resultMap="BaseResultMap" >
     select 
     <include refid="Base_Column_List" />
