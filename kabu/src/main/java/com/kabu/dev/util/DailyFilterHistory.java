@@ -253,13 +253,7 @@ public class DailyFilterHistory {
 			if(sixtyDayAveList.get(0)<sixtyDayAveList.get(1) || eightyDayAveList.get(0)<eightyDayAveList.get(1)) {
 				continue;
 			}
-			//？？条件设定目的确认中。。。。。
-//			if(eightyDayAveList.get(DATA_60-2)<eightyDayAveList.get(DATA_60-1)) {
-//				continue;
-//			}
-			if(eightyDayAveList.get((int) (AveDays-2))<eightyDayAveList.get((int) (AveDays-1))) {
-				continue;
-			}
+			
 			
 			
 			boolean flag = false;

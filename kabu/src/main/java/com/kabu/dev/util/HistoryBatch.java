@@ -35,8 +35,8 @@ public class HistoryBatch {
 	
 	public void Dailybatch() throws Exception { 
 		//设定日期
-		 dateNowStr = "20210602";  
-		 dateNowEnd  =  "20210605"; 
+		 dateNowStr = "20190801";  
+		 dateNowEnd  =  "20210801"; 
 		 
 		 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
 		 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  

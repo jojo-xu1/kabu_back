@@ -2,7 +2,9 @@ package com.kabu.dev.controller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +59,19 @@ public class DailyController {
 	}
 	//当前数据库中已有的股票代码list
 	@GetMapping("hisAllCodeList")
-	public List<Integer> hisAllCodeList() {
+	public List<Map<String,Integer>>  hisAllCodeList() {
 		List<Integer> list = dailyDao.hisAllCodeList();
-		return list;
+		List<Map<String,Integer>>  mapList = new ArrayList<>();
+		for(int i=0;i<list.size();i++) {
+		HashMap<String, Integer > h = new HashMap<String, Integer>();
+			
+				h.put("id",i); 
+				h.put("code",list.get(i)); 
+				mapList.add(h);
+			}
+		        
+		System.out.println(mapList);
+		return mapList;
 	}
 	
 	@GetMapping("hisUserColltInsert")

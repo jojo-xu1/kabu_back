@@ -253,9 +253,7 @@ public class DailyFilter {
 			if(sixtyDayAveList.get(0)<sixtyDayAveList.get(1) || eightyDayAveList.get(0)<eightyDayAveList.get(1)) {
 				continue;
 			}
-			if(eightyDayAveList.get(DATA_60-2)<eightyDayAveList.get(DATA_60-1)) {
-				continue;
-			}
+			
 			boolean flag = false;
 			for (int k=0;k<AveDays;k++) {
 				
