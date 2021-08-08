@@ -36,5 +36,6 @@ public interface DailyEntityMapper {
     int deleteHisColltByUserId(String userId);
     int hisUserColltInsert(Integer stockId,String userId);
     List<Integer> hisUserColltList(String userId);
+    List<Integer> hisAllCodeList();
     
 }

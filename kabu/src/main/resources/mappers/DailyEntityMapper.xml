@@ -59,6 +59,13 @@
   	from historyusercollection
   	where user_id= #{LoginUserId,jdbcType=VARCHAR}
   </select>
+  
+  <select id="hisAllCodeList" resultType="java.lang.Integer" >
+  	select 
+  	stock_id
+  	from stockhistorytrade
+  	group by stock_id
+  </select>
 
   <select id="selectmyfavourite" resultMap="BaseResultMap"  >
   select  st.startbuydate as day_id, st.buy_price as start_price, st.sell_price as end_price, '' as high_price, '' as low_price, 

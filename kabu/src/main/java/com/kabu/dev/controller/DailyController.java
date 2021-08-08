@@ -55,6 +55,12 @@ public class DailyController {
 		
 		
 	}
+	//当前数据库中已有的股票代码list
+	@GetMapping("hisAllCodeList")
+	public List<Integer> hisAllCodeList() {
+		List<Integer> list = dailyDao.hisAllCodeList();
+		return list;
+	}
 	
 	@GetMapping("hisUserColltInsert")
 	public String hisUserColltInsert(int[] stockIdList,String userId) {
