@@ -59,14 +59,14 @@ public class DailyController {
 	}
 	//当前数据库中已有的股票代码list
 	@GetMapping("hisAllCodeList")
-	public List<Map<String,Integer>>  hisAllCodeList() {
+	public List<Map<String,Object>>  hisAllCodeList() {
 		List<Integer> list = dailyDao.hisAllCodeList();
-		List<Map<String,Integer>>  mapList = new ArrayList<>();
+		List<Map<String,Object>>  mapList = new ArrayList<>();
 		for(int i=0;i<list.size();i++) {
-		HashMap<String, Integer > h = new HashMap<String, Integer>();
+		HashMap<String, Object > h = new HashMap<String, Object>();
 			
 				h.put("id",i); 
-				h.put("code",list.get(i)); 
+				h.put("code",list.get(i).toString()); 
 				mapList.add(h);
 			}
 		        
