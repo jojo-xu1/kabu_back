@@ -110,10 +110,8 @@
      updateflag = 1
     </set>
     where updateflag =0 
-    and( stock_id not in
-    (select stock_id from tempstocktrade)
-     or endselldate != ""
-    )
+    and endselldate != ""
+   
   </update>
   
    <update id="updateprice" parameterType="java.lang.String"  >
