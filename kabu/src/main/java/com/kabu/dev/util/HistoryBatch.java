@@ -35,8 +35,8 @@ public class HistoryBatch {
 	
 	public void Dailybatch() throws Exception { 
 		//设定日期
-		 dateNowStr = "20190801";  
-		 dateNowEnd  =  "20210801"; 
+		 dateNowStr = "20210101";  
+		 dateNowEnd  =  "20210815"; 
 		 
 		 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
 		 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
@@ -57,9 +57,9 @@ public class HistoryBatch {
 			 //更新最终交易价格
 			 DailyTradeDao.updateprice(basedate);
 			//更新交易结束日期
-			 DailyTradeDao.updateStockTradeDate(basedate);	//type =2
+			 DailyTradeDao.updateStockTradeDate(basedate);	 //type=2
 			 //卖掉收益率大于2%的股票
-			 DailyTradeDao.updateStockDate();
+			 DailyTradeDao.updateStockDate(basedate); //type=2
 			 //既往推荐股票的 updateflag=1
 			 DailyTradeDao.updateStockTradeUpdateFlag();
 			 //插入当日新增推荐股票
@@ -82,6 +82,9 @@ public class HistoryBatch {
 		List<DailyOutDto> listTodayLow= DailyTradeDao.selectstockpoollow(dateNowStr);
 		for (int j=0;j<listTodayLow.size();j++) {
 			//插入新数据
+			if(listTodayLow.get(j).getStock()==null) {
+				continue;
+			}
 			String stockId = listTodayLow.get(j).getStock().getStockId();
 			BigDecimal price =listTodayLow.get(j).getEndPrice();
 			StockTradeDto stockTradeDto = new StockTradeDto();

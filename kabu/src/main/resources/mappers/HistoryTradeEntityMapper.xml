@@ -90,7 +90,7 @@
      from stockhistorytrade 
      where 1=1
      and stock_id not in
-    (select stock_id from temphistorytrade  where type = 2)
+    (select stock_id from temphistorytrade where type = 2)
      )newdata
     <set >   
      stockhistorytrade.endselldate = #{endselldate,jdbcType=VARCHAR},
@@ -126,10 +126,8 @@
      updateflag = 1
     </set>
     where updateflag =0 
-    and( stock_id not in
-    (select stock_id from temphistorytrade)
-     or endselldate != ""
-    )
+    and endselldate != ""
+    
   </update>
   
    <select id="selectFromTempStockTrade" resultMap="BaseResultMap"  >
