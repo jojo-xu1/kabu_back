@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.kabu.dev.util.DailyBatch;
-import com.kabu.dev.util.DailyRecmBatch;
+import com.kabu.dev.util.HistoryBatch;
 
 
 @SpringBootApplication
@@ -21,3 +21,18 @@ public class KaBuApplication {
 	}
 
 }
+//public class KaBuApplication {
+//	public static void main(String[] args) throws Exception {
+//		  SpringApplication springApplication = 
+//	                new SpringApplicationBuilder()
+//	                .sources(KaBuApplication.class)
+//	                .web(WebApplicationType.NONE)
+//	                .build();
+//	        springApplication.run(args);
+//	    	ApplicationContext context = DailyBatch.getApplicationContext();
+//	    	HistoryBatch userServiceI = context.getBean(HistoryBatch.class);//
+//	    	userServiceI.Dailybatch();
+//		//SpringApplication.run(KaBuApplication.class, args);
+//	}
+//
+//}
