@@ -35,7 +35,7 @@ public class HistoryBatch {
 	
 	public void Dailybatch() throws Exception { 
 		//设定日期
-		 dateNowStr = "20210128";  
+		 dateNowStr = "20210219";  
 		 dateNowEnd  =  "20210815"; 
 		 
 		 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
@@ -45,7 +45,19 @@ public class HistoryBatch {
 		 
 		 Date current = dateStr;
 		 while (current.before(dateEnd)) {
-		     String basedate = sdf.format(current);
+			 String basedate = sdf.format(current);
+			 //查询当天株数
+			 int stockList = DailyTradeDao.selectFromRealstock(basedate);
+			 if (stockList == 0) {
+				//日期累加
+				 Calendar calendar = Calendar.getInstance();
+			     calendar.setTime(current);
+			     calendar.add(Calendar.DATE, 1);
+			     current = calendar.getTime();
+			     //跳出循环
+				 continue;
+			 }
+		     
 			//删除临时表单
 			 DailyTradeDao.deletetempstocktrade();
 			//计算当日低风险股票

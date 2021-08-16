@@ -69,6 +69,12 @@
    #{endselldate,jdbcType=VARCHAR},#{updateflag,jdbcType=INTEGER})
   </insert>
   
+  <select id="selectFromRealstock" resultType="java.lang.Integer"  >
+    select 
+    count(*)
+    from realstock
+     where day_id = #{dateNowStr,jdbcType=VARCHAR}
+  </select>
   <update id="updateprice" parameterType="java.lang.String"  >
     update stockhistorytrade, 
 	(

@@ -22,4 +22,5 @@ public interface HistoryTradeEntityMapper {
 	int updateStockTradeDate(String endselldate);
 	List<StockTradeDto> selectFromTempStockTrade();
 	int insertstocktrade(StockHistoryTradeDto stockHistoryTradeDto);
+	int selectFromRealstock(String dateNowStr);
 }
