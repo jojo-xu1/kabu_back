@@ -26,6 +26,85 @@ public class DailyFilterHistory {
 	static private double DOB_60 =60.0;
 	static private double DOB_80 =80.0;
 	/**
+	 * 计算10日均值、20日均值、10日均值出现拐头向下卖出
+	 * 
+	 * @param list
+	 * @return
+	 * @throws Exception
+	 */
+
+	public List<DailyOutDto> getSellList(List<DailyOutDto> list,Long AveDays,String basedate) throws Exception {
+		List<DailyOutDto> kabuList = new ArrayList<DailyOutDto>();
+		int day = (DATA_20+AveDays.intValue())*2;
+		int nodata =0;
+		int stockno=0;
+		int step1,step2,step3,step4,step5;
+		step1= step2 = step3 = step4 = step5 = 0;
+		
+		for (int i = list.size() - 1; i >= 0; i--) {
+			boolean aveerror=false;//成长超过一般
+			//获取股票数据
+			if(list.get(i).getStock() == null) {
+			}else {
+			List<DailyOutDto> DailyPriceList = dailyDao.selectHisListById(list.get(i).getStock().getStockId(),day,basedate);
+			
+			List<Double> tenDayAveList = new ArrayList<>(); //十日均线值list
+			List<Double> twnDayAveList = new ArrayList<>(); //二十日均线值list			
+			List<Double> twnUpRateList = new ArrayList<>(); //二十日均线值增长率list
+			
+			//条件一：可参考数据大于需要条数
+			if(DailyPriceList.size() < day) {
+				nodata++;
+				continue;//TODO 当可参考数据小于需要条数时的算法
+			}
+			//计算十日均线  二十日均线
+			stockno++;
+			
+			for (int k=0;k<DATA_10;k++) {//
+				//设定初始值
+				double twnDayAve =0;
+				double tenDayAve = 0;
+				double oldtwnDayAve=0;
+
+				for(int j =k;j<k+DATA_10;j++) {
+					//tenDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ tenDayAve*(j-k))/(j-k+1);
+					tenDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
+				}
+				tenDayAve = tenDayAve/DOB_10;
+				for(int j =k;j<k+DATA_20;j++) {
+					//twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
+					twnDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
+				}
+				twnDayAve = twnDayAve/DOB_20;
+				if(aveerror)break;
+				tenDayAveList.add(tenDayAve);
+				twnDayAveList.add(twnDayAve);						
+			}
+			if(aveerror)continue;
+			//二十日均线 均线变化率 
+			for (int k=0;k<AveDays-1;k++) {
+				double rate20 = (twnDayAveList.get(k)-twnDayAveList.get(k+1))*1000/twnDayAveList.get(k+1);
+				twnUpRateList.add(rate20);
+			}
+			step1++;
+			//条件二：十日均线和二十日均线走势向上   ※可以省略
+			if(tenDayAveList.get(0)>tenDayAveList.get(1)){// || twnDayAveList.get(0)>twnDayAveList.get(1)) {
+				continue;
+			}
+			DailyOutDto rtnDto = list.get(i);
+			rtnDto.setMa10((Double) tenDayAveList.get(0)); // 10日均值
+			rtnDto.setMa20((Double) twnDayAveList.get(0)); // 20日均值
+			rtnDto.setMa20UpRate(twnUpRateList.get(0)); // 20日均值变化率
+			kabuList.add(rtnDto);
+			if(kabuList.size()>MAX_STOCK)return kabuList;
+		}
+			
+	}
+		System.out.println("step1=");
+		System.out.println(step1);
+		return kabuList;
+	}
+	/**
 	 * 计算10日均值、20日均值、10日均值增长率、20日均值增长率并筛选
 	 * 
 	 * @param list

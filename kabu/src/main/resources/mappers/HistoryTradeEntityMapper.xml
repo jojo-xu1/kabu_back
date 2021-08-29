@@ -51,7 +51,12 @@
      and stock_id not in (select stock_id from stockmaster where industry='ETF')
      and stock_id not in('4342')
   </select>
-  
+   <select id="selectFromHistoryStockTrade" resultMap="DailyOutMap"  >
+    select 
+    <include refid="Base_Column_List02" />
+    from realstock
+    where stock_id in (select stock_id from stockhistorytrade where updateflag = 0)
+   </select>
   <select id="selectstockpoolhigh" resultMap="DailyOutMap" >
     select 
     <include refid="Base_Column_List02" />
@@ -107,6 +112,36 @@
   	and stockhistorytrade.updateflag = 0
   </update>
   
+    <update id="updateEndBy10Day" parameterType="java.lang.String"  >
+     update stockhistorytrade,
+   (
+    select stock_id,count(*) as num from 
+    (select A.stock_id as stock_id,A.day_id as day_id from realstock A,stockhistorytrade B 
+    where  A.stock_id = B.stock_id
+    and B.updateflag =0
+    and A.day_id &lt; #{endselldate,jdbcType=VARCHAR}
+    and A.day_id >= B.startbuydate)daydata 
+     group by stock_id
+     )newdata
+    <set >   
+     stockhistorytrade.endselldate = #{endselldate,jdbcType=VARCHAR}
+    </set>
+  	where stockhistorytrade.stock_id  =newdata.stock_id
+  	and newdata.num > 9
+  	and stockhistorytrade.type = 2
+  	and stockhistorytrade.updateflag = 0
+  </update>
+  
+  <update id="updateEndByMoveLineDown" parameterType="java.lang.String"  >
+    update stockhistorytrade 
+    <set >   
+       endselldate = #{endselldate,jdbcType=VARCHAR}
+    </set>
+    where updateflag =0 
+    and stock_id = #{stockid,jdbcType=VARCHAR}
+    
+  </update>
+  
   <update id="updateStockDate" parameterType="java.lang.String"  >
     update stockhistorytrade,
    (
@@ -130,11 +165,18 @@
     update stockhistorytrade 
     <set >   
      updateflag = 1
+     sell_price = today_price
     </set>
     where updateflag =0 
     and endselldate != ""
     
   </update>
+  
+  <delete id="deletePriceZero" parameterType="java.lang.String"  >
+    delete from stockhistorytrade
+    where updateflag =1
+    and (sell_price &lt; 0.1 OR sell_price &lt; 0.1)
+  </delete>
   
    <select id="selectFromTempStockTrade" resultMap="BaseResultMap"  >
     select 

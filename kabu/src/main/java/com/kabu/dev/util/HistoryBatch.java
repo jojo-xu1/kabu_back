@@ -68,12 +68,18 @@ public class HistoryBatch {
 			 DailyByMA2(basedate);
 			 //更新最终交易价格
 			 DailyTradeDao.updateprice(basedate);
+			 //均线拐头向下的时候卖出
+			 DailySellMA2(basedate);
+			 //更新持有天数大于10的股票
+			 DailyTradeDao.updateEndBy10Day(basedate);
 			//更新交易结束日期
 			 DailyTradeDao.updateStockTradeDate(basedate);	 //type=2
 			 //卖掉收益率大于2%的股票
 			 DailyTradeDao.updateStockDate(basedate); //type=2
 			 //既往推荐股票的 updateflag=1
 			 DailyTradeDao.updateStockTradeUpdateFlag();
+			 //删除sellprice=0的股票
+			// DailyTradeDao.deletePriceZero();	
 			 //插入当日新增推荐股票
 			 insertIntoStockTrade(basedate);
 			 //日期累加
@@ -167,4 +173,16 @@ public class HistoryBatch {
 			DailyTradeDao.insertstocktrade(stockHistoryTradeDto);
 		}
 	}
+	private void DailySellMA2(String dateNowStr) throws Exception { 
+		//获取当日推荐股票
+		long AveDays = 3;
+		List<DailyOutDto> list = DailyTradeDao.selectFromHistoryStockTrade();
+		if(list.size()<=0)return;
+		List<DailyOutDto> listToday = filter.getSellList(list,AveDays,dateNowStr);
+		for (int j=0;j<listToday.size();j++) {
+		//更新卖出数据
+		String stockId = listToday.get(j).getStock().getStockId();
+		DailyTradeDao.updateEndByMoveLineDown(dateNowStr,stockId);
+	}
+}
 }
