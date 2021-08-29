@@ -164,7 +164,7 @@
   <update id="updateStockTradeUpdateFlag" parameterType="java.lang.String"  >
     update stockhistorytrade 
     <set >   
-     updateflag = 1
+     updateflag = 1,
      sell_price = today_price
     </set>
     where updateflag =0 
