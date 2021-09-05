@@ -96,10 +96,11 @@ public class DailyFilterHistory {
 			rtnDto.setMa20((Double) twnDayAveList.get(0)); // 20日均值
 			rtnDto.setMa20UpRate(twnUpRateList.get(0)); // 20日均值变化率
 			kabuList.add(rtnDto);
-			if(kabuList.size()>MAX_STOCK)return kabuList;
+			
 		}
 			
 	}
+		
 		System.out.println("step1=");
 		System.out.println(step1);
 		return kabuList;

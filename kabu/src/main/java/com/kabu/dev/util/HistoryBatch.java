@@ -35,8 +35,8 @@ public class HistoryBatch {
 	
 	public void Dailybatch() throws Exception { 
 		//设定日期
-		 dateNowStr = "20210219";  
-		 dateNowEnd  =  "20210815"; 
+		 dateNowStr = "20210510";  
+		 dateNowEnd  =  "20210519"; 
 		 
 		 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
 		 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
@@ -176,13 +176,14 @@ public class HistoryBatch {
 	private void DailySellMA2(String dateNowStr) throws Exception { 
 		//获取当日推荐股票
 		long AveDays = 3;
-		List<DailyOutDto> list = DailyTradeDao.selectFromHistoryStockTrade();
+		List<DailyOutDto> list = DailyTradeDao.selectFromHistoryStockTrade(dateNowStr);
 		if(list.size()<=0)return;
 		List<DailyOutDto> listToday = filter.getSellList(list,AveDays,dateNowStr);
 		for (int j=0;j<listToday.size();j++) {
 		//更新卖出数据
 		String stockId = listToday.get(j).getStock().getStockId();
 		DailyTradeDao.updateEndByMoveLineDown(dateNowStr,stockId);
+		
 	}
 }
 }

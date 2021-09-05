@@ -55,7 +55,9 @@
     select 
     <include refid="Base_Column_List02" />
     from realstock
-    where stock_id in (select stock_id from stockhistorytrade where updateflag = 0)
+    where day_id = #{dateNowStr,jdbcType=VARCHAR}
+    and stock_id in (select stock_id from stockhistorytrade where updateflag = 0)
+    
    </select>
   <select id="selectstockpoolhigh" resultMap="DailyOutMap" >
     select 
