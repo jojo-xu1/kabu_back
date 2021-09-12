@@ -44,6 +44,22 @@ public class DailyController {
 		
 		
 	}
+	
+	@GetMapping("hisKline")
+	public ResultJson getHisKline(String stockId,String hisDate) {
+		try {
+			KLineOutDto k=dailyService.HisKlineService(stockId, hisDate);
+			ResultJson ret=ResultJson.success(k);
+			return ret;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			ResultJson ret=ResultJson.fail(e);
+			return ret;
+		}
+		
+		
+	}
 	@GetMapping("insert")
 	public String createUserCollection(String stockId,String userId) {
 		try{

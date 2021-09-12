@@ -6,7 +6,6 @@ import org.apache.ibatis.annotations.Param;
 
 import com.kabu.dev.dto.DailyOutDto;
 import com.kabu.dev.dto.KLineDailyOutDto;
-import com.kabu.dev.dto.UserCollectionDto;
 
 public interface DailyEntityMapper {
 
@@ -18,6 +17,8 @@ public interface DailyEntityMapper {
     List<DailyOutDto> selectMA(String stockId,String dayId);
  
     List<KLineDailyOutDto> selectKline(@Param("stockId")String stockId,@Param("day")int day);
+    List<KLineDailyOutDto> selectHisKline(@Param("stockId")String stockId,@Param("strDate")String strDate,@Param("endDate")String endDate);
+    
     
     List<DailyOutDto> selectByIdMini(String stockId);
     List<DailyOutDto> selectByIdMiniEx(@Param("stockId")String stockId,@Param("day")int day);
