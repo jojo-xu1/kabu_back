@@ -40,7 +40,6 @@ public class DailyFilterHistory {
 		int stockno=0;
 		int step1,step2,step3,step4,step5;
 		step1= step2 = step3 = step4 = step5 = 0;
-		
 		for (int i = list.size() - 1; i >= 0; i--) {
 			boolean aveerror=false;//成长超过一般
 			//获取股票数据
@@ -71,11 +70,13 @@ public class DailyFilterHistory {
 					tenDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
 				}
 				tenDayAve = tenDayAve/DOB_10;
+			
 				for(int j =k;j<k+DATA_20;j++) {
 					//twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
 					twnDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
 				}
 				twnDayAve = twnDayAve/DOB_20;
+			
 				if(aveerror)break;
 				tenDayAveList.add(tenDayAve);
 				twnDayAveList.add(twnDayAve);						
@@ -87,10 +88,11 @@ public class DailyFilterHistory {
 				twnUpRateList.add(rate20);
 			}
 			step1++;
-			//条件二：十日均线和二十日均线走势向上   ※可以省略
+			//1.十日均线向上，则保留(十日均线向下，卖出）
 			if(tenDayAveList.get(0)>tenDayAveList.get(1)){// || twnDayAveList.get(0)>twnDayAveList.get(1)) {
 				continue;
 			}
+
 			DailyOutDto rtnDto = list.get(i);
 			rtnDto.setMa10((Double) tenDayAveList.get(0)); // 10日均值
 			rtnDto.setMa20((Double) twnDayAveList.get(0)); // 20日均值
@@ -134,7 +136,7 @@ public class DailyFilterHistory {
 		int stockno=0;
 		int step1,step2,step3,step4,step5;
 		step1= step2 = step3 = step4 = step5 = 0;
-		
+		double maxAve = 0;
 		for (int i = list.size() - 1; i >= 0; i--) {
 			boolean aveerror=false;//成长超过一般
 			//获取股票数据
@@ -153,7 +155,7 @@ public class DailyFilterHistory {
 			}
 			//计算十日均线  二十日均线
 			stockno++;
-			
+			maxAve = 0;
 			for (int k=0;k<DATA_10;k++) {//
 				//设定初始值
 				double twnDayAve =0;
@@ -163,8 +165,13 @@ public class DailyFilterHistory {
 				for(int j =k;j<k+DATA_10;j++) {
 					//tenDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ tenDayAve*(j-k))/(j-k+1);
 					tenDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
+					//获取10日的Max值
+					if(j ==0 && maxAve<DailyPriceList.get(j).getEndPrice().doubleValue()){
+						maxAve = DailyPriceList.get(j).getEndPrice().doubleValue();
+					}
 				}
 				tenDayAve = tenDayAve/DOB_10;
+
 				for(int j =k;j<k+DATA_20;j++) {
 					//twnDayAve = (DailyPriceList.get(j).getEndPrice().doubleValue()+ twnDayAve*(j-k))/(j-k+1);
 					twnDayAve += DailyPriceList.get(j).getEndPrice().doubleValue();
@@ -178,6 +185,7 @@ public class DailyFilterHistory {
 			        oldtwnDayAve=twnDayAve;*/
 				}
 				twnDayAve = twnDayAve/DOB_20;
+
 				if(aveerror)break;
 				tenDayAveList.add(tenDayAve);
 				twnDayAveList.add(twnDayAve);						
@@ -196,11 +204,18 @@ public class DailyFilterHistory {
 			if(twnDayAveList.get(DATA_10-2)<twnDayAveList.get(DATA_10-1)) {
 				continue;
 			}
+			
+			//条件三：向上后又向下的时候，需要去掉。
+			double rateOut = (maxAve-tenDayAveList.get(0))*100/tenDayAveList.get(0);
+			if(rateOut > 1 ) {
+				continue;
+			}
+			
 			step2++;
 			boolean flag = false;
 			for (int k=0;k<AveDays;k++) {
 				
-				//条件三：二十日均线在minRate到maxRate之间 
+				//条件四：二十日均线在minRate到maxRate之间 
 				if(k<AveDays-1) {
 					if(twnUpRateList.get(k) < MINRATE ||twnUpRateList.get(k)>MAXRATE) {
 						flag = true;
@@ -214,9 +229,9 @@ public class DailyFilterHistory {
 			}
 			flag = false;
 			step3++;
-			//条件四：10日线连续在20日线之上
+			//条件五：10日线连续在20日线之上
 			for (int k=0;k<=AveDays;k++) {
-				//条件四：10日线连续在20日线之上形成交叉
+				//条件五：10日线连续在20日线之上形成交叉
 				if(tenDayAveList.get(k)<twnDayAveList.get(k)) {
 					flag = true;
 					break;
@@ -228,7 +243,7 @@ public class DailyFilterHistory {
 			}
 			step4++;
 			for (int k=DATA_10-1;k>=DATA_10-AveDays.intValue()-1;k--) {
-				//条件四：10日线连续在20日线之上形成交叉
+				//条件五：10日线连续在20日线之上形成交叉
 				if(tenDayAveList.get(k)>twnDayAveList.get(k)) {
 					flag = true;
 					break;
@@ -244,7 +259,8 @@ public class DailyFilterHistory {
 			rtnDto.setMa20((Double) twnDayAveList.get(0)); // 20日均值
 			rtnDto.setMa20UpRate(twnUpRateList.get(0)); // 20日均值变化率
 			kabuList.add(rtnDto);
-			if(kabuList.size()>MAX_STOCK)return kabuList;
+			//历史数据 全部放出 
+			//if(kabuList.size()>MAX_STOCK)return kabuList;
 		}
 			
 	}

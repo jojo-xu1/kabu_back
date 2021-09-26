@@ -88,10 +88,15 @@ public class DailyRecmBatch {
 		 DailyByMA();//by MA10 ,MA20
 		
 		 DailyByMAHigh();//by MA60 ,MA80
+		 //更新最终交易价格
 		 DailyTradeDao.updateprice();
+		//如果选择的股票不再出现在今天的List中就卖掉
 		 WriteEndDay();//type =2
+		 //卖掉收益率大于2%的股票
 		 DailyTradeDao.updateStockDateByWin();
+		 //卖掉收益率大于10%的股票
 		 DailyTradeDao.updateStockDateByMidRisk();
+		 //卖掉收益率大于5%的股票
 		 DailyTradeDao.updateStockDateByLowRisk();
 		 DailyTradeDao.updateStockTradeUpdateFlag();//updateflag=1
 		 insertIntoStockTrade();

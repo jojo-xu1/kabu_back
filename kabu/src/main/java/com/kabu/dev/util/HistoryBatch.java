@@ -35,8 +35,8 @@ public class HistoryBatch {
 	
 	public void Dailybatch() throws Exception { 
 		//设定日期
-		 dateNowStr = "20210510";  
-		 dateNowEnd  =  "20210519"; 
+		 dateNowStr = "20210301";  
+		 dateNowEnd  =  "20210901"; 
 		 
 		 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
 		 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
@@ -61,9 +61,9 @@ public class HistoryBatch {
 			//删除临时表单
 			 DailyTradeDao.deletetempstocktrade();
 			//计算当日低风险股票
-			 DailyByMA1(basedate);
+			 //DailyByMA1(basedate);
 			//计算当日中风险股票
-			 DailyByMA3(basedate);
+			// DailyByMA3(basedate);
 			 //计算当日高风险股票
 			 DailyByMA2(basedate);
 			 //更新最终交易价格
@@ -72,10 +72,10 @@ public class HistoryBatch {
 			 DailySellMA2(basedate);
 			 //更新持有天数大于10的股票
 			 DailyTradeDao.updateEndBy10Day(basedate);
-			//更新交易结束日期
-			 DailyTradeDao.updateStockTradeDate(basedate);	 //type=2
+			//如果选择的股票不再出现在今天的List中就卖掉
+			// DailyTradeDao.updateStockTradeDate(basedate);	 //type=2
 			 //卖掉收益率大于2%的股票
-			 DailyTradeDao.updateStockDate(basedate); //type=2
+			 //DailyTradeDao.updateStockDate(basedate); //type=2
 			 //既往推荐股票的 updateflag=1
 			 DailyTradeDao.updateStockTradeUpdateFlag();
 			 //删除sellprice=0的股票

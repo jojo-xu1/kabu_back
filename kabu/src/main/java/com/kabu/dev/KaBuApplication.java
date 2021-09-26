@@ -15,24 +15,24 @@ import com.kabu.dev.util.HistoryBatch;
 @SpringBootApplication
 @EnableScheduling
 @MapperScan("com.kabu.dev.dao")
-public class KaBuApplication {
+/*public class KaBuApplication {
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(KaBuApplication.class, args);
 	}
 
+}*/
+public class KaBuApplication {
+	public static void main(String[] args) throws Exception {
+		  SpringApplication springApplication = 
+	                new SpringApplicationBuilder()
+	                .sources(KaBuApplication.class)
+	                .web(WebApplicationType.NONE)
+	                .build();
+	        springApplication.run(args);
+	    	ApplicationContext context = DailyBatch.getApplicationContext();
+	    	HistoryBatch userServiceI = context.getBean(HistoryBatch.class);//
+	    	userServiceI.Dailybatch();
+		//SpringApplication.run(KaBuApplication.class, args);
+	}
+
 }
-//public class KaBuApplication {
-//	public static void main(String[] args) throws Exception {
-//		  SpringApplication springApplication = 
-//	                new SpringApplicationBuilder()
-//	                .sources(KaBuApplication.class)
-//	                .web(WebApplicationType.NONE)
-//	                .build();
-//	        springApplication.run(args);
-//	    	ApplicationContext context = DailyBatch.getApplicationContext();
-//	    	HistoryBatch userServiceI = context.getBean(HistoryBatch.class);//
-//	    	userServiceI.Dailybatch();
-//		//SpringApplication.run(KaBuApplication.class, args);
-//	}
-//
-//}
