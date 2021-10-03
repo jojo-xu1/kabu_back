@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kabu.dev.dao.StockHistoryTradeEntityMapper" >
+  <resultMap id="BaseResultMap" type="com.kabu.dev.entity.StockHistoryTradeEntity" >
+    <result column="buy_price" property="buyPrice" jdbcType="DECIMAL" />
+    <result column="sell_price" property="sellPrice" jdbcType="DECIMAL" />
+  </resultMap>
+  
+  <select id="selectAll" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    buy_price,sell_price
+    from stockhistorytrade
+  </select>
+  <update id="truncateTable">
+    truncate table stockhistorytrade
+  </update>
+</mapper>
