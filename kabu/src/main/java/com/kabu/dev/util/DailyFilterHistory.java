@@ -14,8 +14,6 @@ public class DailyFilterHistory {
 	DailyEntityMapper dailyDao;
 
 	static private double GROUTH =12.0;
-	static private double MINRATE =1.0;
-	static private double MAXRATE =3.5;
 	static private int DATA_20 =20;
 	static private int DATA_10 =10;
 	static private int DATA_80 =80;
@@ -114,22 +112,22 @@ public class DailyFilterHistory {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<DailyOutDto> setMA(List<DailyOutDto> list,String basedate) throws Exception {
+	public List<DailyOutDto> setMA(List<DailyOutDto> list,String basedate,double MinRate,double MaxRate) throws Exception {
 		List<DailyOutDto> rtnList = new ArrayList<DailyOutDto>();
 		//假定参数
 		long AveDays = 3;
-		long minRate = 2;  //增长率的1000倍值
-		long maxRate = 5;	//增长率的1000倍值
+//		long minRate = 2;  //增长率的1000倍值
+//		long maxRate = 5;	//增长率的1000倍值
 		//当抽出数据大于10条时，缩紧抽出条件
 		//do {
-			rtnList = getList(list, AveDays, minRate, maxRate,basedate);
-			minRate = minRate+1;
+			rtnList = getList(list, AveDays, MinRate, MaxRate,basedate);
+			MinRate = MinRate+1;
 		//}while(rtnList.size()>10);
 		//TODO 筛选后0条数据
 		return rtnList;
 	}
 	
-	public List<DailyOutDto> getList(List<DailyOutDto> list,Long AveDays,Long minRate,Long maxRate,String basedate) throws Exception {
+	public List<DailyOutDto> getList(List<DailyOutDto> list,Long AveDays,Double minRate,Double maxRate,String basedate) throws Exception {
 		List<DailyOutDto> kabuList = new ArrayList<DailyOutDto>();
 		int day = (DATA_20+AveDays.intValue())*2;
 		int nodata =0;
@@ -217,7 +215,7 @@ public class DailyFilterHistory {
 				
 				//条件四：二十日均线在minRate到maxRate之间 
 				if(k<AveDays-1) {
-					if(twnUpRateList.get(k) < MINRATE ||twnUpRateList.get(k)>MAXRATE) {
+					if(twnUpRateList.get(k) < minRate ||twnUpRateList.get(k)>maxRate) {
 						flag = true;
 						break;
 					}

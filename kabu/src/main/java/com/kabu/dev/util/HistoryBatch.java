@@ -1,11 +1,24 @@
 package com.kabu.dev.util;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,8 +33,14 @@ public class HistoryBatch {
 
 	@Autowired
 	HistoryTradeEntityMapper DailyTradeDao;
+	
+	@Autowired
+	ProfitWinRateBatch profitWinRateBatch;
+	
 	@Autowired
 	DailyFilterHistory filter;
+	private double MinRate;
+	private double MaxRate;
 	private String dateNowStr;
 	private String dateNowEnd;
 	/**
@@ -34,65 +53,114 @@ public class HistoryBatch {
 	
 	
 	public void Dailybatch() throws Exception { 
-		//设定日期
-		 dateNowStr = "20210301";  
-		 dateNowEnd  =  "20210901"; 
-		 
-		 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
-		 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
-		 Date dateStr = fmt.parse(dateNowStr);
-		 Date dateEnd = fmt.parse(dateNowEnd);
-		 
-		 Date current = dateStr;
-		 while (current.before(dateEnd)) {
-			 String basedate = sdf.format(current);
-			 //查询当天株数
-			 int stockList = DailyTradeDao.selectFromRealstock(basedate);
-			 if (stockList == 0) {
-				//日期累加
-				 Calendar calendar = Calendar.getInstance();
-			     calendar.setTime(current);
-			     calendar.add(Calendar.DATE, 1);
-			     current = calendar.getTime();
-			     //跳出循环
-				 continue;
+		//读取csv
+		Charset charset = StandardCharsets.UTF_8;
+		int bufferSize = 5 * 1024 * 1024;
+		String tempPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+		//System.out.println("读取的路径"+tempPath);
+		List<String> OnePath = Arrays.asList(tempPath.split("/"));
+		List dataPath = new ArrayList(OnePath);
+		 dataPath.remove(0);
+		 Collections.replaceAll(dataPath, "classes!", "classes");
+		 for (int i = 1;i<dataPath.size();i++) {
+
+			 if (dataPath.get(i).equals("kabu-0.0.1-SNAPSHOT.jar!")) {
+				// System.out.println("删除元素"+dataPath.get(i));
+				 dataPath.remove(i);
 			 }
-		     
-			//删除临时表单
-			 DailyTradeDao.deletetempstocktrade();
-			//计算当日低风险股票
-			 //DailyByMA1(basedate);
-			//计算当日中风险股票
-			// DailyByMA3(basedate);
-			 //计算当日高风险股票
-			 DailyByMA2(basedate);
-			 //更新最终交易价格
-			 DailyTradeDao.updateprice(basedate);
-			 //均线拐头向下的时候卖出
-			 DailySellMA2(basedate);
-			 //更新持有天数大于10的股票
-			 DailyTradeDao.updateEndBy10Day(basedate);
-			//如果选择的股票不再出现在今天的List中就卖掉
-			// DailyTradeDao.updateStockTradeDate(basedate);	 //type=2
-			 //卖掉收益率大于2%的股票
-			 //DailyTradeDao.updateStockDate(basedate); //type=2
-			 //既往推荐股票的 updateflag=1
-			 DailyTradeDao.updateStockTradeUpdateFlag();
-			 //删除sellprice=0的股票
-			// DailyTradeDao.deletePriceZero();	
-			 //插入当日新增推荐股票
-			 insertIntoStockTrade(basedate);
-			 //日期累加
-		     Calendar calendar = Calendar.getInstance();
-		     calendar.setTime(current);
-		     calendar.add(Calendar.DATE, 1);
-		     current = calendar.getTime();
-		        
-		        System.out.println(sdf.format(current));
+			 if (dataPath.get(i).equals("BOOT-INF")) {
+				// System.out.println("删除元素"+dataPath.get(i));
+				 dataPath.remove(i);
+			 }
+		 }
+		 //System.out.println("数组"+dataPath);
+		
+		
+		String path= String.join("/", dataPath);
+		//System.out.println("最终路径"+path);
+		List<String[]> data = new ArrayList<>();
+		File writeFile = new File(path+"/"+"output.csv");
+		BufferedWriter writeText = new BufferedWriter( new FileWriter(writeFile));
+		writeText.write("minrate,maxrate,stardate,enddate,winRate,profitRate");
+		try (BufferedReader reader = new BufferedReader(
+		        new InputStreamReader(new FileInputStream(new File(path+"/"+"input.csv")), charset), bufferSize)) {
+		    String line;
+		    while (Objects.nonNull(line = reader.readLine())) {
+		        data.add(line.split(","));
 		    }
-
 		 
-
+		    for (int i = 1;i<data.size();i++) {
+		    	
+				 MinRate = Double.valueOf(data.get(i)[0]);
+				 MaxRate = Double.valueOf(data.get(i)[1]);
+				 dateNowStr = data.get(i)[2];  
+				 dateNowEnd  =  data.get(i)[3]; 
+				 
+				 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
+				 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
+				 Date dateStr = fmt.parse(dateNowStr);
+				 Date dateEnd = fmt.parse(dateNowEnd);
+				 
+				 Date current = dateStr;
+				 while (current.before(dateEnd)) {
+					 String basedate = sdf.format(current);
+					 //查询当天株数
+					 int stockList = DailyTradeDao.selectFromRealstock(basedate);
+					 if (stockList == 0) {
+						//日期累加
+						 Calendar calendar = Calendar.getInstance();
+					     calendar.setTime(current);
+					     calendar.add(Calendar.DATE, 1);
+					     current = calendar.getTime();
+					     //跳出循环
+						 continue;
+					 }
+				     
+					//删除临时表单
+					 DailyTradeDao.deletetempstocktrade();
+					//计算当日低风险股票
+					 //DailyByMA1(basedate);
+					//计算当日中风险股票
+					// DailyByMA3(basedate);
+					 //计算当日高风险股票
+					 DailyByMA2(basedate,MinRate,MaxRate);
+					 //更新最终交易价格
+					 DailyTradeDao.updateprice(basedate);
+					 //均线拐头向下的时候卖出
+					 DailySellMA2(basedate);
+					 //更新持有天数大于10的股票
+					 DailyTradeDao.updateEndBy10Day(basedate);
+					//如果选择的股票不再出现在今天的List中就卖掉
+					// DailyTradeDao.updateStockTradeDate(basedate);	 //type=2
+					 //卖掉收益率大于2%的股票
+					 //DailyTradeDao.updateStockDate(basedate); //type=2
+					 //既往推荐股票的 updateflag=1
+					 DailyTradeDao.updateStockTradeUpdateFlag();
+					 //删除sellprice=0的股票
+					// DailyTradeDao.deletePriceZero();	
+					 //插入当日新增推荐股票
+					 insertIntoStockTrade(basedate);
+					 //日期累加
+				     Calendar calendar = Calendar.getInstance();
+				     calendar.setTime(current);
+				     calendar.add(Calendar.DATE, 1);
+				     current = calendar.getTime();
+				        
+				        System.out.println(sdf.format(current));
+				    }
+		//调batch处理文件 
+				Map<String,Double> A = profitWinRateBatch.getResult();
+				
+				 writeText.newLine();
+				 writeText.write(MinRate+","+MaxRate+","+dateNowStr+","+dateNowEnd+","+A.get("winRate")+","+A.get("profitRate"));
+				    }
+		  
+		} catch (Exception e) {
+		    // IOException 就囊括了读取文件可能发生的全部意外
+		    e.printStackTrace();
+		}
+		writeText.flush();
+		writeText.close();
 		System.out.println("come to Dailybatch");
 	}
 	
@@ -117,10 +185,10 @@ public class HistoryBatch {
 		}
 	}
 	
-	private void DailyByMA2(String dateNowStr) throws Exception { 
+	private void DailyByMA2(String dateNowStr,double MinRate,double MaxRate) throws Exception { 
 			//获取当日推荐股票
 			List<DailyOutDto> list = DailyTradeDao.selectstockpool(dateNowStr);
-			List<DailyOutDto> listToday = filter.setMA(list,dateNowStr);
+			List<DailyOutDto> listToday = filter.setMA(list,dateNowStr,MinRate,MaxRate);
 		for (int j=0;j<listToday.size();j++) {
 			//插入新数据
 			String stockId = listToday.get(j).getStock().getStockId();

@@ -29,7 +29,7 @@ public class ProfitWinRateBatch {
 		List<StockHistoryTradeEntity> list=shtMapper.selectAll();
 		
 		list=list.stream().filter(entity -> {
-			if(entity.getBuyPrice()!=null&&entity.getBuyPrice()!=null)
+			if(entity.getBuyPrice()!=null&&entity.getSellPrice()!=null)
 				if(entity.getBuyPrice()>0 && entity.getSellPrice()>0)
 					return true;
 			return false;
@@ -50,8 +50,16 @@ public class ProfitWinRateBatch {
 			}
 		}
 		BigDecimal countB = new BigDecimal(count);
-		map.put("winRate", new BigDecimal(win).divide(countB,4,BigDecimal.ROUND_HALF_UP).doubleValue());
+		if(win!=0) {
+			map.put("winRate", new BigDecimal(win).divide(countB,4,BigDecimal.ROUND_HALF_UP).doubleValue());	
+		}else {
+			map.put("winRate",Double.parseDouble("0"));
+		}
+		if(!profit.equals(BigDecimal.ZERO)) {
 		map.put("profitRate", profit.divide(countB,4,BigDecimal.ROUND_HALF_UP).doubleValue());
+		}else {
+			map.put("profitRate",Double.parseDouble("0"));
+		}
 		shtMapper.truncateTable();
 		System.out.println(map);
 		return map;
