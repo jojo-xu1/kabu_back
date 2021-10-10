@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kabu.dev.dto.DailyOutDto;
 import com.kabu.dev.dto.StockHistoryTradeDto;
+import com.kabu.dev.dto.StockHistoryTradeFullBeanDto;
 import com.kabu.dev.dto.StockTradeDto;
 
 public interface HistoryTradeEntityMapper {
@@ -27,4 +28,5 @@ public interface HistoryTradeEntityMapper {
 	List<StockTradeDto> selectFromTempStockTrade();
 	int insertstocktrade(StockHistoryTradeDto stockHistoryTradeDto);
 	int selectFromRealstock(String dateNowStr);
+	List<StockHistoryTradeFullBeanDto> selectAllStockHistoryTrade();
 }

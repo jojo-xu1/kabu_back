@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import com.kabu.dev.dao.HistoryTradeEntityMapper;
 import com.kabu.dev.dto.DailyOutDto;
 import com.kabu.dev.dto.StockHistoryTradeDto;
+import com.kabu.dev.dto.StockHistoryTradeFullBeanDto;
 import com.kabu.dev.dto.StockTradeDto;
 
 @Component
@@ -57,19 +58,22 @@ public class HistoryBatch {
 		Charset charset = StandardCharsets.UTF_8;
 		int bufferSize = 5 * 1024 * 1024;
 		String tempPath = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-		//System.out.println("读取的路径"+tempPath);
+		System.out.println("读取的路径"+tempPath);
 		List<String> OnePath = Arrays.asList(tempPath.split("/"));
 		List dataPath = new ArrayList(OnePath);
 		 dataPath.remove(0);
-		 Collections.replaceAll(dataPath, "classes!", "classes");
+		// Collections.replaceAll(dataPath, "classes!", "classes");
 		 for (int i = 1;i<dataPath.size();i++) {
-
+			 
 			 if (dataPath.get(i).equals("kabu-0.0.1-SNAPSHOT.jar!")) {
 				// System.out.println("删除元素"+dataPath.get(i));
 				 dataPath.remove(i);
 			 }
 			 if (dataPath.get(i).equals("BOOT-INF")) {
 				// System.out.println("删除元素"+dataPath.get(i));
+				 dataPath.remove(i);
+			 }
+			 if (dataPath.get(i).equals("classes!")) {
 				 dataPath.remove(i);
 			 }
 		 }
@@ -79,11 +83,12 @@ public class HistoryBatch {
 		String path= String.join("/", dataPath);
 		//System.out.println("最终路径"+path);
 		List<String[]> data = new ArrayList<>();
-		File writeFile = new File(path+"/"+"output.csv");
-		BufferedWriter writeText = new BufferedWriter( new FileWriter(writeFile));
+		File writeFile = new File("/"+path+"/"+"output.csv");
+		BufferedWriter writeText = new BufferedWriter( new FileWriter(writeFile,true));
 		writeText.write("minrate,maxrate,stardate,enddate,winRate,profitRate");
+		//writeText.close();
 		try (BufferedReader reader = new BufferedReader(
-		        new InputStreamReader(new FileInputStream(new File(path+"/"+"input.csv")), charset), bufferSize)) {
+		        new InputStreamReader(new FileInputStream(new File("/"+path+"/"+"input.csv")), charset), bufferSize)) {
 		    String line;
 		    while (Objects.nonNull(line = reader.readLine())) {
 		        data.add(line.split(","));
@@ -148,9 +153,28 @@ public class HistoryBatch {
 				        
 				        System.out.println(sdf.format(current));
 				    }
+				 
+		//输出本次计算元数据
+				 
+				 File fileDetail = new File("/"+path+"/"+"Detail_"+i+".csv");
+				 BufferedWriter DetailText = new BufferedWriter( new FileWriter(fileDetail));
+				 DetailText.write("trade_id,stock_id,type,basedate,startbuydate,buy_price,sell_price,today_price,endselldate,updateflag");
+				 //获取表中内容
+				 List<StockHistoryTradeFullBeanDto> selectAll = DailyTradeDao.selectAllStockHistoryTrade();
+				 //循环写进文件
+				 if(!selectAll.isEmpty()) {
+					 for(int j=0;j<selectAll.size();j++) {
+						 DetailText.newLine();
+						 DetailText.write(selectAll.get(j).getTradeId()+","+selectAll.get(j).getStockId()+","+selectAll.get(j).getType()+","
+						 +selectAll.get(j).getStartbuydate()+","+selectAll.get(j).getBuy_price()+","+selectAll.get(j).getSell_price()+","+selectAll.get(j).getToday_price()+","+selectAll.get(j).getEndselldate()
+						 +","+selectAll.get(j).getUpdateflag());
+						   
+					 } 
+				 }
+				 DetailText.close();
 		//调batch处理文件 
 				Map<String,Double> A = profitWinRateBatch.getResult();
-				
+				//BufferedWriter writeText1 = new BufferedWriter( new FileWriter(writeFile,true));
 				 writeText.newLine();
 				 writeText.write(MinRate+","+MaxRate+","+dateNowStr+","+dateNowEnd+","+A.get("winRate")+","+A.get("profitRate"));
 				    }

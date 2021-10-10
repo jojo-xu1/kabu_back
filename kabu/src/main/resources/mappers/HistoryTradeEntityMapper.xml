@@ -21,6 +21,18 @@
     <result column="endselldate" property="endselldate" jdbcType="VARCHAR" />
     <association property="stock" column="stock_id" select="com.kabu.dev.dao.StockEntityMapper.selectByPrimaryKey" ></association>
   </resultMap>
+  <resultMap id="FullBaenMap" type="com.kabu.dev.dto.StockHistoryTradeFullBeanDto" >
+    <id column="trade_id" property="tradeId" jdbcType="VARCHAR" />
+    <result column="stock_id" property="stockId" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="basedate" property="basedate" jdbcType="VARCHAR" />
+    <result column="startbuydate" property="startbuydate" jdbcType="VARCHAR" />
+    <result column="buy_price" property="buy_price" jdbcType="DECIMAL" />
+    <result column="sell_price" property="sell_price" jdbcType="DECIMAL" />
+    <result column="today_price" property="today_price" jdbcType="DECIMAL" />
+    <result column="endselldate" property="endselldate" jdbcType="VARCHAR" />
+    <result column="updateflag" property="updateflag" jdbcType="INTEGER" />
+    </resultMap>
 <sql id="Base_Column_List" >
     stock_id, type,startbuydate, buy_price, sell_price, endselldate, updateflag
 </sql>
@@ -30,7 +42,9 @@
 <delete id="deletetempstocktrade"  parameterType="java.lang.String" >
     delete from temphistorytrade
 </delete>
-
+<sql id="Base_Column_List03" >
+    trade_id,stock_id,type,basedate,startbuydate,buy_price,sell_price,today_price,endselldate,updateflag
+</sql>
   <select id="selectstockpoollow" resultMap="DailyOutMap"  >
   select  rel.day_id as day_id, rel.start_price as start_price, rel.end_price as end_price, rel.high_price as high_price, rel.low_price as low_price, 
   rel.vol as vol,'' as startbuydate,'' as endselldate, rel.stock_id as stock_id
@@ -187,6 +201,12 @@
     where stock_id not in
     (select stock_id from stockhistorytrade where updateflag =0)
 </select>
+
+   <select id="selectAllStockHistoryTrade" resultMap="FullBaenMap"  >
+    select 
+    <include refid="Base_Column_List03" />
+    from stockhistorytrade
+	</select>
   
 <insert id="insertstocktrade" parameterType="com.kabu.dev.dto.StockHistoryTradeDto" >
    insert into stockhistorytrade (stock_id,startbuydate,type,basedate,buy_price,sell_price,endselldate,updateflag)
