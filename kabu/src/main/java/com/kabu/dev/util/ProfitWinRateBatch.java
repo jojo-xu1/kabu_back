@@ -50,13 +50,16 @@ public class ProfitWinRateBatch {
 			}
 		}
 		BigDecimal countB = new BigDecimal(count);
+		System.out.println("count:------"+count);
+		System.out.println("win:------"+win);
+		System.out.println("profit:------"+profit);
 		if(win!=0) {
-			map.put("winRate", new BigDecimal(win).divide(countB,4,BigDecimal.ROUND_HALF_UP).doubleValue());	
+			map.put("winRate", new BigDecimal(win).divide(countB,6,BigDecimal.ROUND_HALF_UP).doubleValue());	
 		}else {
 			map.put("winRate",Double.parseDouble("0"));
 		}
 		if(!profit.equals(BigDecimal.ZERO)) {
-		map.put("profitRate", profit.divide(countB,4,BigDecimal.ROUND_HALF_UP).doubleValue());
+		map.put("profitRate", profit.divide(countB,6,BigDecimal.ROUND_HALF_UP).doubleValue());
 		}else {
 			map.put("profitRate",Double.parseDouble("0"));
 		}

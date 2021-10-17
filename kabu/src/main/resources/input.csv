@@ -1,3 +1,3 @@
-minrate,maxrate,stardate,enddate
-0,6,20210301,20210303
-0,3,20210302,20210305
+minrate,maxrate,stardate,enddate,rateparam,avedays
+0,6,20210301,20210303,1,3
+0,3,20210302,20210305,1,3

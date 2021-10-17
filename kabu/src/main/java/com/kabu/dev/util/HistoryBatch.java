@@ -24,10 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.kabu.dev.dao.HistoryTradeEntityMapper;
+import com.kabu.dev.dao.StockHistoryTradeEntityMapper;
 import com.kabu.dev.dto.DailyOutDto;
 import com.kabu.dev.dto.StockHistoryTradeDto;
 import com.kabu.dev.dto.StockHistoryTradeFullBeanDto;
 import com.kabu.dev.dto.StockTradeDto;
+import com.kabu.dev.vo.ParamObject;
 
 @Component
 public class HistoryBatch {
@@ -39,11 +41,17 @@ public class HistoryBatch {
 	ProfitWinRateBatch profitWinRateBatch;
 	
 	@Autowired
+	StockHistoryTradeEntityMapper shtMapper;
+	
+	@Autowired
 	DailyFilterHistory filter;
 	private double MinRate;
 	private double MaxRate;
 	private String dateNowStr;
 	private String dateNowEnd;
+	private double rateParam;
+	private long AveDays; 
+	
 	/**
 	 * 历史股票推荐batch
 	 * 
@@ -93,13 +101,18 @@ public class HistoryBatch {
 		    while (Objects.nonNull(line = reader.readLine())) {
 		        data.add(line.split(","));
 		    }
-		 
+
+			//清空数据库的数据
+			shtMapper.truncateTable();
+			
 		    for (int i = 1;i<data.size();i++) {
 		    	
 				 MinRate = Double.valueOf(data.get(i)[0]);
 				 MaxRate = Double.valueOf(data.get(i)[1]);
 				 dateNowStr = data.get(i)[2];  
 				 dateNowEnd  =  data.get(i)[3]; 
+				 rateParam  = Double.valueOf(data.get(i)[4]); 
+				 AveDays   = Long.valueOf(data.get(i)[5]); 
 				 
 				 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
 				 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
@@ -120,7 +133,13 @@ public class HistoryBatch {
 					     //跳出循环
 						 continue;
 					 }
-				     
+					 ParamObject paramObject = new ParamObject();
+					 paramObject.setBasedate(basedate);
+					 paramObject.setMaxRate(MaxRate);
+					 paramObject.setMinRate(MinRate);
+					 paramObject.setRateParam(rateParam);
+					 paramObject.setAveDays(AveDays);
+					 
 					//删除临时表单
 					 DailyTradeDao.deletetempstocktrade();
 					//计算当日低风险股票
@@ -128,7 +147,7 @@ public class HistoryBatch {
 					//计算当日中风险股票
 					// DailyByMA3(basedate);
 					 //计算当日高风险股票
-					 DailyByMA2(basedate,MinRate,MaxRate);
+					 DailyByMA2(paramObject);
 					 //更新最终交易价格
 					 DailyTradeDao.updateprice(basedate);
 					 //均线拐头向下的时候卖出
@@ -165,7 +184,7 @@ public class HistoryBatch {
 				 if(!selectAll.isEmpty()) {
 					 for(int j=0;j<selectAll.size();j++) {
 						 DetailText.newLine();
-						 DetailText.write(selectAll.get(j).getTradeId()+","+selectAll.get(j).getStockId()+","+selectAll.get(j).getType()+","
+						 DetailText.write(selectAll.get(j).getTradeId()+","+selectAll.get(j).getStockId()+","+selectAll.get(j).getType()+","+selectAll.get(j).getBasedate()+","
 						 +selectAll.get(j).getStartbuydate()+","+selectAll.get(j).getBuy_price()+","+selectAll.get(j).getSell_price()+","+selectAll.get(j).getToday_price()+","+selectAll.get(j).getEndselldate()
 						 +","+selectAll.get(j).getUpdateflag());
 						   
@@ -209,10 +228,10 @@ public class HistoryBatch {
 		}
 	}
 	
-	private void DailyByMA2(String dateNowStr,double MinRate,double MaxRate) throws Exception { 
+	private void DailyByMA2(ParamObject paramObject) throws Exception { 
 			//获取当日推荐股票
-			List<DailyOutDto> list = DailyTradeDao.selectstockpool(dateNowStr);
-			List<DailyOutDto> listToday = filter.setMA(list,dateNowStr,MinRate,MaxRate);
+			List<DailyOutDto> list = DailyTradeDao.selectstockpool(paramObject.getBasedate());
+			List<DailyOutDto> listToday = filter.setMA(list,paramObject);
 		for (int j=0;j<listToday.size();j++) {
 			//插入新数据
 			String stockId = listToday.get(j).getStock().getStockId();

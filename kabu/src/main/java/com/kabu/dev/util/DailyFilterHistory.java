@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.kabu.dev.dao.DailyEntityMapper;
 import com.kabu.dev.dto.DailyOutDto;
+import com.kabu.dev.vo.ParamObject;
 @Component
 public class DailyFilterHistory {
 	@Autowired
@@ -18,7 +19,6 @@ public class DailyFilterHistory {
 	static private int DATA_10 =10;
 	static private int DATA_80 =80;
 	static private int DATA_60 =60;
-	static private int MAX_STOCK =7;
 	static private double DOB_10 =10.0;
 	static private double DOB_20 =20.0;
 	static private double DOB_60 =60.0;
@@ -57,7 +57,7 @@ public class DailyFilterHistory {
 			//计算十日均线  二十日均线
 			stockno++;
 			
-			for (int k=0;k<DATA_10;k++) {//
+			for (int k=0;k<DATA_10;k++) {
 				//设定初始值
 				double twnDayAve =0;
 				double tenDayAve = 0;
@@ -112,22 +112,23 @@ public class DailyFilterHistory {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<DailyOutDto> setMA(List<DailyOutDto> list,String basedate,double MinRate,double MaxRate) throws Exception {
+	public List<DailyOutDto> setMA(List<DailyOutDto> list,ParamObject paramObject) throws Exception {
 		List<DailyOutDto> rtnList = new ArrayList<DailyOutDto>();
 		//假定参数
-		long AveDays = 3;
+		long AveDays = paramObject.getAveDays();
+		
 //		long minRate = 2;  //增长率的1000倍值
 //		long maxRate = 5;	//增长率的1000倍值
 		//当抽出数据大于10条时，缩紧抽出条件
 		//do {
-			rtnList = getList(list, AveDays, MinRate, MaxRate,basedate);
-			MinRate = MinRate+1;
+			rtnList = getList(list,AveDays,paramObject);
+//			paramObject.setMinRate(paramObject.getMinRate()+1);
 		//}while(rtnList.size()>10);
 		//TODO 筛选后0条数据
 		return rtnList;
 	}
 	
-	public List<DailyOutDto> getList(List<DailyOutDto> list,Long AveDays,Double minRate,Double maxRate,String basedate) throws Exception {
+	public List<DailyOutDto> getList(List<DailyOutDto> list,Long AveDays,ParamObject paramObject) throws Exception {
 		List<DailyOutDto> kabuList = new ArrayList<DailyOutDto>();
 		int day = (DATA_20+AveDays.intValue())*2;
 		int nodata =0;
@@ -140,7 +141,7 @@ public class DailyFilterHistory {
 			//获取股票数据
 			if(list.get(i).getStock() == null) {
 			}else {
-			List<DailyOutDto> DailyPriceList = dailyDao.selectHisListById(list.get(i).getStock().getStockId(),day,basedate);
+			List<DailyOutDto> DailyPriceList = dailyDao.selectHisListById(list.get(i).getStock().getStockId(),day,paramObject.getBasedate());
 			
 			List<Double> tenDayAveList = new ArrayList<>(); //十日均线值list
 			List<Double> twnDayAveList = new ArrayList<>(); //二十日均线值list			
@@ -205,7 +206,7 @@ public class DailyFilterHistory {
 			
 			//条件三：向上后又向下的时候，需要去掉。
 			double rateOut = (maxAve-tenDayAveList.get(0))*100/tenDayAveList.get(0);
-			if(rateOut > 1 ) {
+			if(rateOut > paramObject.getRateParam()) {
 				continue;
 			}
 			
@@ -215,7 +216,7 @@ public class DailyFilterHistory {
 				
 				//条件四：二十日均线在minRate到maxRate之间 
 				if(k<AveDays-1) {
-					if(twnUpRateList.get(k) < minRate ||twnUpRateList.get(k)>maxRate) {
+					if(twnUpRateList.get(k) < paramObject.getMinRate() ||twnUpRateList.get(k)>paramObject.getMaxRate()) {
 						flag = true;
 						break;
 					}
@@ -257,8 +258,7 @@ public class DailyFilterHistory {
 			rtnDto.setMa20((Double) twnDayAveList.get(0)); // 20日均值
 			rtnDto.setMa20UpRate(twnUpRateList.get(0)); // 20日均值变化率
 			kabuList.add(rtnDto);
-			//历史数据 全部放出 
-			//if(kabuList.size()>MAX_STOCK)return kabuList;
+			
 		}
 			
 	}
