@@ -89,12 +89,15 @@ public class HistoryBatch {
 		
 		
 		String path= String.join("/", dataPath);
+		String filename = "/"+path+"/"+"output.csv";
 		//System.out.println("最终路径"+path);
-		List<String[]> data = new ArrayList<>();
-		File writeFile = new File("/"+path+"/"+"output.csv");
+		List<String[]> data = new ArrayList<>();		
+		File writeFile = new File(filename);
+		if (!writeFile.exists()) {
 		BufferedWriter writeText = new BufferedWriter( new FileWriter(writeFile,true));
-		writeText.write("minrate,maxrate,stardate,enddate,winRate,profitRate");
-		//writeText.close();
+		writeText.write("minrate,maxrate,stardate,enddate,rateParam,AveDays,winRate,profitRate");
+		writeText.close();
+		}
 		try (BufferedReader reader = new BufferedReader(
 		        new InputStreamReader(new FileInputStream(new File("/"+path+"/"+"input.csv")), charset), bufferSize)) {
 		    String line;
@@ -193,17 +196,18 @@ public class HistoryBatch {
 				 DetailText.close();
 		//调batch处理文件 
 				Map<String,Double> A = profitWinRateBatch.getResult();
-				//BufferedWriter writeText1 = new BufferedWriter( new FileWriter(writeFile,true));
-				 writeText.newLine();
-				 writeText.write(MinRate+","+MaxRate+","+dateNowStr+","+dateNowEnd+","+A.get("winRate")+","+A.get("profitRate"));
-				    }
+				BufferedWriter writeText1 = new BufferedWriter( new FileWriter(writeFile,true));
+				 writeText1.newLine();
+				 writeText1.write(MinRate+","+MaxRate+","+dateNowStr+","+dateNowEnd+","+rateParam+","+AveDays+","+A.get("winRate")+","+A.get("profitRate"));
+				 writeText1.close();	 
+		    }
 		  
 		} catch (Exception e) {
 		    // IOException 就囊括了读取文件可能发生的全部意外
 		    e.printStackTrace();
 		}
-		writeText.flush();
-		writeText.close();
+		//writeText.flush();
+		//writeText.close();
 		System.out.println("come to Dailybatch");
 	}
 	
@@ -232,6 +236,7 @@ public class HistoryBatch {
 			//获取当日推荐股票
 			List<DailyOutDto> list = DailyTradeDao.selectstockpool(paramObject.getBasedate());
 			List<DailyOutDto> listToday = filter.setMA(list,paramObject);
+			
 		for (int j=0;j<listToday.size();j++) {
 			//插入新数据
 			String stockId = listToday.get(j).getStock().getStockId();
@@ -239,7 +244,7 @@ public class HistoryBatch {
 			StockTradeDto stockTradeDto = new StockTradeDto();
 			stockTradeDto.setStockId(stockId);
 			stockTradeDto.setType(2);
-			stockTradeDto.setStartbuydate(dateNowStr);
+			stockTradeDto.setStartbuydate(paramObject.getBasedate());
 			stockTradeDto.setBuy_price(price);
 			stockTradeDto.setSell_price(null);
 			stockTradeDto.setEndselldate("");

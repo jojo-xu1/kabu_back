@@ -41,7 +41,7 @@ public class ProfitWinRateBatch {
 			BigDecimal r=sell.subtract(buy).divide(buy,10,BigDecimal.ROUND_HALF_UP);
 			
 			if(r.compareTo(round)==1) {
-				
+				System.out.println(r);
 				profit=profit.add(r);
 				count++;
 				if(r.doubleValue()>0) {
