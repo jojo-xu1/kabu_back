@@ -14,13 +14,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Component;
 
 import com.kabu.dev.dao.HistoryTradeEntityMapper;
@@ -32,8 +33,14 @@ import com.kabu.dev.dto.StockTradeDto;
 import com.kabu.dev.vo.ParamObject;
 
 @Component
-public class HistoryBatch {
+@EnableScheduling
 
+public class HistoryBatch {
+	
+	
+	@Autowired
+	private ScheduledAnnotationBeanPostProcessor postProcessor;
+	
 	@Autowired
 	HistoryTradeEntityMapper DailyTradeDao;
 	
@@ -45,13 +52,17 @@ public class HistoryBatch {
 	
 	@Autowired
 	DailyFilterHistory filter;
+	
+
+
+	
+	private long Index;
 	private double MinRate;
 	private double MaxRate;
 	private String dateNowStr;
 	private String dateNowEnd;
 	private double rateParam;
 	private long AveDays; 
-	
 	/**
 	 * 历史股票推荐batch
 	 * 
@@ -90,13 +101,27 @@ public class HistoryBatch {
 		
 		String path= String.join("/", dataPath);
 		String filename = "/"+path+"/"+"output.csv";
+		int k = 1;//默认从第二行开始读数据
 		//System.out.println("最终路径"+path);
-		List<String[]> data = new ArrayList<>();		
+		List<String[]> data = new ArrayList<>();
+		List<String[]> dataOut = new ArrayList<>();
 		File writeFile = new File(filename);
 		if (!writeFile.exists()) {
 		BufferedWriter writeText = new BufferedWriter( new FileWriter(writeFile,true));
-		writeText.write("minrate,maxrate,stardate,enddate,rateParam,AveDays,winRate,profitRate");
+		writeText.write("index,minrate,maxrate,stardate,enddate,rateParam,AveDays,winRate,profitRate");
 		writeText.close();
+		}else {
+			try (BufferedReader readerOut = new BufferedReader(
+			        new InputStreamReader(new FileInputStream(new File("/"+path+"/"+"output.csv")), charset), bufferSize)) {
+			    String line01;
+			    while (Objects.nonNull(line01 = readerOut.readLine())) {
+			    	dataOut.add(line01.split(","));
+			    }
+			}
+			//定位下次记录开始位置
+			 for (int i = 1;i<dataOut.size();i++) {
+				 k+=1;
+			 }
 		}
 		try (BufferedReader reader = new BufferedReader(
 		        new InputStreamReader(new FileInputStream(new File("/"+path+"/"+"input.csv")), charset), bufferSize)) {
@@ -108,14 +133,14 @@ public class HistoryBatch {
 			//清空数据库的数据
 			shtMapper.truncateTable();
 			
-		    for (int i = 1;i<data.size();i++) {
-		    	
-				 MinRate = Double.valueOf(data.get(i)[0]);
-				 MaxRate = Double.valueOf(data.get(i)[1]);
-				 dateNowStr = data.get(i)[2];  
-				 dateNowEnd  =  data.get(i)[3]; 
-				 rateParam  = Double.valueOf(data.get(i)[4]); 
-				 AveDays   = Long.valueOf(data.get(i)[5]); 
+		    for (int i = k;i<data.size();i++) {
+		    	 Index = Long.valueOf(data.get(i)[0]);
+				 MinRate = Double.valueOf(data.get(i)[1]);
+				 MaxRate = Double.valueOf(data.get(i)[2]);
+				 dateNowStr = data.get(i)[3];  
+				 dateNowEnd  =  data.get(i)[4]; 
+				 rateParam  = Double.valueOf(data.get(i)[5]); 
+				 AveDays   = Long.valueOf(data.get(i)[6]); 
 				 
 				 DateFormat fmt =new SimpleDateFormat("yyyyMMdd");
 				 DateFormat sdf = new SimpleDateFormat("yyyyMMdd");  
@@ -178,7 +203,7 @@ public class HistoryBatch {
 				 
 		//输出本次计算元数据
 				 
-				 File fileDetail = new File("/"+path+"/"+"Detail_"+i+".csv");
+				 File fileDetail = new File("/"+path+"/"+"Detail_"+Index+".csv");
 				 BufferedWriter DetailText = new BufferedWriter( new FileWriter(fileDetail));
 				 DetailText.write("trade_id,stock_id,type,basedate,startbuydate,buy_price,sell_price,today_price,endselldate,updateflag");
 				 //获取表中内容
@@ -198,7 +223,7 @@ public class HistoryBatch {
 				Map<String,Double> A = profitWinRateBatch.getResult();
 				BufferedWriter writeText1 = new BufferedWriter( new FileWriter(writeFile,true));
 				 writeText1.newLine();
-				 writeText1.write(MinRate+","+MaxRate+","+dateNowStr+","+dateNowEnd+","+rateParam+","+AveDays+","+A.get("winRate")+","+A.get("profitRate"));
+				 writeText1.write(Index+","+MinRate+","+MaxRate+","+dateNowStr+","+dateNowEnd+","+rateParam+","+AveDays+","+A.get("winRate")+","+A.get("profitRate"));
 				 writeText1.close();	 
 		    }
 		  
@@ -302,4 +327,7 @@ public class HistoryBatch {
 		
 	}
 }
+	public static void getPath() {
+		
+	}
 }
